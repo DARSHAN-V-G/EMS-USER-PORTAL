@@ -1,0 +1,126 @@
+.landing-container {
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+  /* Start with padding suitable for mobile */
+  padding: 20px 15px; /* Vertical padding, Horizontal padding */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  text-align: center; /* Center text within the container */
+  box-sizing: border-box; /* Include padding in width calculation */
+}
+
+.title-container {
+  color: var(--text-primary); /* Use variable */
+  font-family: "Poppins", sans-serif;
+  /* Use clamp for responsive font size: min, preferred, max */
+  /* Adjust values as needed: clamp(minimum size, preferred size based on viewport, maximum size) */
+  font-size: clamp(1.8rem, 8vw, 2.5rem); /* Responsive font size */
+  font-weight: 800;
+  margin-bottom: 0.8rem; /* Use rem */
+  line-height: 1.2;
+  max-width: 90%; /* Prevent text from touching edges on small screens */
+}
+
+.tagline-container {
+  color: var(--text-light); /* Use variable */
+  font-family: "Roboto", sans-serif;
+  /* Start with a mobile-friendly font size */
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.6;
+  margin-bottom: 2rem; /* Use rem */
+  max-width: 90%; /* Prevent text from touching edges */
+}
+
+.buttons-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem; /* Use rem */
+  width: 100%;
+  /* Start with a mobile-friendly max-width */
+  max-width: 220px;
+}
+
+.action-button {
+  width: 100%; /* Make buttons fill container */
+  /* Start with mobile-friendly height */
+  height: 44px;
+  border-radius: 8px;
+  color: var(--text-light); /* Use variable */
+  font-family: "Roboto", sans-serif;
+  /* Start with mobile-friendly font size */
+  font-size: 0.95rem;
+  font-weight: 700;
+  line-height: 1.5;
+  background-color: var(--primary-green); /* Use variable */
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease; /* Add transform transition */
+}
+
+.action-button:hover {
+  background-color: var(--hover-green); /* Use variable */
+}
+
+.action-button:active { /* Add active state for touch feedback */
+  transform: scale(0.98);
+}
+
+
+/* --- Media Queries for Responsiveness --- */
+
+/* Larger screens (e.g., tablets and desktops) */
+@media (min-width: 601px) {
+  .landing-container {
+    padding: 20px; /* Restore original padding */
+    max-width: 500px; /* Increase max width */
+  }
+
+  .title-container {
+    /* Optionally adjust clamp or set fixed size for larger screens */
+    font-size: clamp(2.2rem, 6vw, 3rem); /* Adjust range for larger screens */
+    margin-bottom: 1rem;
+    max-width: none; /* Remove max-width constraint */
+  }
+
+  .tagline-container {
+    font-size: 1.125rem; /* Increase tagline font size */
+    margin-bottom: 2.5rem;
+    max-width: none; /* Remove max-width constraint */
+  }
+
+  .buttons-container {
+    max-width: 250px; /* Increase button container width */
+    gap: 1.2rem; /* Slightly increase gap */
+  }
+
+  .action-button {
+    height: 48px; /* Increase button height */
+    font-size: 1rem; /* Increase font size */
+  }
+}
+
+/* Optional: Very small screens adjustments if needed */
+/*
+@media (max-width: 360px) {
+  .title-container {
+    font-size: 1.8rem;
+  }
+  .tagline-container {
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+  }
+  .buttons-container {
+    max-width: 180px;
+    gap: 0.8rem;
+  }
+  .action-button {
+    height: 40px;
+    font-size: 0.9rem;
+  }
+}
+*/
