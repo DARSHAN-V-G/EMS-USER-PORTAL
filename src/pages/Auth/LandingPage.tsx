@@ -1,26 +1,39 @@
 import React from "react";
 import "./LandingPage.css";
+import { useNavigate } from "react-router-dom";
 
 const LandingPage: React.FC = () => {
+  const navigate = useNavigate();
+
+  const handleLoginClick = () => {
+    navigate('/login');
+  };
+
+  const handleRegisterClick = () => {
+    navigate('/register');
+  };
+
   return (
     <div className="landing-container">
-      <div className="title-container">
-        <div>
-          <div>
-            <span className="title-text">Event Management</span>
-          </div>
-          <div></div>
-          <div>
-            <span className="title-text">System</span>
-          </div>
-        </div>
-      </div>
+      {/* Simplified title structure using h1 and potentially spans or <br> */}
+      <h1 className="title-container">
+        Event Management<br />System
+      </h1>
+      {/* Alternative if specific styling per line is needed:
+      <h1 className="title-container">
+        <span className="title-line-1">Event Management</span>
+        <span className="title-line-2">System</span>
+      </h1>
+      */}
+
       <div className="tagline-container">
         <span className="tagline-text">Click. Register. Show up.</span>
       </div>
+
       <div className="buttons-container">
-        <button className="action-button login-button">Login</button>
-        <button className="action-button register-button">Register</button>
+        {/* Removed potentially redundant login/register classes if styling is identical */}
+        <button className="action-button" onClick={handleLoginClick}>Login</button>
+        <button className="action-button" onClick={handleRegisterClick}>Register</button>
       </div>
     </div>
   );
