@@ -1,0 +1,115 @@
+/* Base Button Styles */
+.button-base {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+    border-radius: 0.375rem; /* rounded-md */
+    font-size: 0.875rem; /* text-sm */
+    font-weight: 500; /* font-medium */
+    transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 150ms;
+    cursor: pointer;
+    /* Focus visible styles (adjust as needed) */
+    outline: none;
+    box-shadow: none; /* Reset potential browser defaults */
+  }
+  
+  .button-base:focus-visible {
+    outline: 2px solid blue; /* Example focus ring */
+    outline-offset: 2px;
+  }
+  
+  /* Disabled State */
+  .button-base:disabled {
+    pointer-events: none;
+    opacity: 0.5;
+  }
+  
+  /* --- Variants --- */
+  .button-variant-default {
+    background-color: #1f2937; /* bg-primary */
+    color: #f9fafb; /* text-primary-foreground */
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); /* shadow */
+  }
+  .button-variant-default:hover {
+    background-color: #1f2937/90; /* hover:bg-primary/90 */
+  }
+  
+  .button-variant-destructive {
+    background-color: #ef4444; /* bg-destructive */
+    color: #f9fafb; /* text-destructive-foreground */
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); /* shadow-sm */
+  }
+  .button-variant-destructive:hover {
+    background-color: #ef4444/90; /* hover:bg-destructive/90 */
+  }
+  
+  .button-variant-outline {
+    border: 1px solid #e5e7eb; /* border border-input */
+    background-color: transparent; /* bg-transparent */
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); /* shadow-sm */
+    color: #374151; /* Adjust text color if needed */
+  }
+  .button-variant-outline:hover {
+    background-color: #f3f4f6; /* hover:bg-accent */
+    color: #1f2937; /* hover:text-accent-foreground */
+  }
+  
+  .button-variant-secondary {
+    background-color: #f3f4f6; /* bg-secondary */
+    color: #1f2937; /* text-secondary-foreground */
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); /* shadow-sm */
+  }
+  .button-variant-secondary:hover {
+    background-color: #f3f4f6/80; /* hover:bg-secondary/80 */
+  }
+  
+  .button-variant-ghost {
+    background-color: transparent;
+    color: #374151; /* Adjust text color if needed */
+  }
+  .button-variant-ghost:hover {
+    background-color: #f3f4f6; /* hover:bg-accent */
+    color: #1f2937; /* hover:text-accent-foreground */
+  }
+  
+  .button-variant-link {
+    color: #1f2937; /* text-primary */
+    text-decoration-line: underline;
+    text-underline-offset: 4px;
+    background-color: transparent;
+  }
+  .button-variant-link:hover {
+    /* Add hover effect if desired */
+  }
+  
+  /* --- Sizes --- */
+  .button-size-default {
+    height: 2.25rem; /* h-9 */
+    padding-left: 1rem; /* px-4 */
+    padding-right: 1rem;
+    padding-top: 0.5rem; /* py-2 */
+    padding-bottom: 0.5rem;
+  }
+  
+  .button-size-sm {
+    height: 2rem; /* h-8 */
+    border-radius: 0.375rem; /* rounded-md */
+    padding-left: 0.75rem; /* px-3 */
+    padding-right: 0.75rem;
+    font-size: 0.75rem; /* text-xs */
+  }
+  
+  .button-size-lg {
+    height: 2.5rem; /* h-10 */
+    border-radius: 0.375rem; /* rounded-md */
+    padding-left: 2rem; /* px-8 */
+    padding-right: 2rem;
+  }
+  
+  .button-size-icon {
+    height: 2.25rem; /* h-9 */
+    width: 2.25rem; /* w-9 */
+  }
