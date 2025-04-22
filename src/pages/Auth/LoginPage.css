@@ -1,0 +1,123 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: #1f1f1f;
+  }
+
+
+  .login-container {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem; /* added to give breathing space on smaller screens */
+  }
+  
+.login-box {
+  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+  width: 100%;
+  max-width: 700px; /* increased size to better fit laptops and tablets */
+  background: #21212174;
+  border: 1px solid #00000060;
+}
+
+.login-label,
+.login-input,
+.login-button {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+
+  .login-title {
+    color: #43c463;
+    text-align: center;
+    font-weight: bold;
+    margin-bottom: 1.5rem;
+  }
+  
+  .login-label {
+
+    color: white;
+    font-size: 1rem;
+    display: block;
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .login-input {
+    width: 100%;
+    padding: 0.7rem;
+    border-radius: 10px;
+    border: none;
+    background-color: #5c8f89;
+    color: white;
+    font-size: 1rem;
+    outline: none;
+    box-sizing: border-box;
+  }
+  
+  .login-options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1rem;
+  }
+  
+  .remember-me {
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.9rem;
+  }
+  
+  .forgot-link {
+    color: #3ca1d2;
+    text-decoration: none;
+    font-size: 0.9rem;
+  }
+  
+  .login-button {
+    width: 100%;
+    background-color: #43c463;
+    color: white;
+    border: none;
+    padding: 0.8rem;
+    border-radius: 10px;
+    font-size: 1rem;
+    margin-top: 1rem;
+    cursor: pointer;
+    font-weight: 500;
+  }
+  
+  .signup-link {
+    color: white;
+    text-align: center;
+    margin-top: 1rem;
+    font-size: 0.95rem;
+  }
+  
+  .signup-link a {
+    color: #3ca1d2;
+    text-decoration: none;
+  }
+  
+
+  @media (min-width: 768px) {
+    .login-box {
+      max-width: 600px;
+      padding: 2.5rem;
+    }
+  }
+  
+  @media (min-width: 1024px) {
+    .login-box {
+      max-width: 700px;
+      padding: 3rem;
+    }
+  }
+  
