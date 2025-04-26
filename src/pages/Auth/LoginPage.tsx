@@ -1,6 +1,6 @@
 import React from 'react';
 import './LoginPage.css';
-
+import { Link } from "react-router-dom";
 
 const LoginPage: React.FC = () => {
   return (
@@ -25,7 +25,7 @@ const LoginPage: React.FC = () => {
         <button className="login-button">LOGIN</button>
 
         <div className="signup-link">
-          Don’t have an account yet? <a href="">Sign Up</a>
+          Don’t have an account yet? <Link to ="/signup">Sign Up</Link>
         </div>
       </div>
     </div>

@@ -1,0 +1,158 @@
+/* Outer container */
+.error-page-outer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 100vh;
+  /* Apply gradient to the outer container */
+  background: linear-gradient(78deg, rgba(36, 44, 59, 1) 9%, rgba(21, 85, 65, 1) 100%);
+  padding: 1rem; /* Add padding for spacing */
+  box-sizing: border-box; /* Include padding in height/width */
+}
+
+/* Inner container */
+.error-page-inner {
+  position: relative;
+  width: 100%;
+  max-width: 393px; /* Mobile max width */
+  overflow: hidden; /* Keep hidden for mobile to clip content if needed */
+  background-color: transparent; /* Ensure transparent background */
+  display: flex;
+  flex-direction: column;
+  /* Let content determine height, ensure it can fill viewport if needed */
+  min-height: calc(100vh - 2rem);
+  align-items: center; /* Center content horizontally */
+  justify-content: center; /* Center content vertically */
+}
+
+/* Back Button specific styles within Error Page */
+.error-page-back-button {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  color: #ffffff;
+  z-index: 10;
+}
+
+/* Hover state for back button */
+.error-page-back-button:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+}
+
+/* Content Area */
+.error-page-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex-grow: 1; /* Allow content to take available space */
+  padding: 1rem; /* Mobile padding */
+  text-align: center; /* Center text elements */
+  width: 100%; /* Ensure content area takes width */
+}
+
+/* Title */
+.error-page-title {
+  font-family: 'Poppins', Helvetica, sans-serif;
+  font-weight: 800;
+  color: #4bc25d; /* Keep original color */
+  font-size: 32px;
+  margin-bottom: 3rem;
+}
+
+/* Card specific styles within Error Page - Remove card appearance */
+.error-page-card {
+  background-color: transparent;
+  border: none;
+  box-shadow: none;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+/* Card Content specific styles within Error Page */
+.error-page-card-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0;
+}
+
+/* Image / SVG */
+.error-page-image {
+  width: 169px;
+  height: 169px;
+  object-fit: cover;
+  margin-bottom: 2rem;
+}
+
+/* Error Message */
+.error-page-message {
+  font-family: 'Roboto', Helvetica, sans-serif;
+  font-weight: 400;
+  color: #ffffff; /* Keep text white for dark background */
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+  max-width: 300px;
+}
+
+/* Style for the icon inside the button if needed */
+.error-page-back-button svg {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+/* --- Desktop Styles --- */
+@media (min-width: 768px) {
+  .error-page-inner {
+    /* Remove desktop-specific background, shadow, border-radius */
+    /* background-color: rgba(255, 255, 255, 0.95); */
+    /* height: auto; */ /* Not needed if using flex */
+    /* min-height: 500px; */ /* Not needed if using flex */
+    max-width: 100%; /* Allow inner container to fill outer padding */
+    /* border-radius: 0.75rem; */
+    /* box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); */
+    /* overflow: visible; */ /* Not needed */
+    /* color: #333; */ /* Remove text color change */
+  }
+
+  /* Adjust text colors back to suit dark background */
+  .error-page-title {
+    font-size: 48px;
+    margin-bottom: 4rem;
+    color: #4bc25d; /* Revert to original color */
+  }
+
+  .error-page-message {
+    font-size: 1.25rem;
+    max-width: 400px;
+    color: #ffffff; /* Revert to white */
+  }
+
+  .error-page-back-button {
+    /* Adjust position based on outer padding */
+    top: 2rem; /* Example: slightly more space */
+    left: 2rem;
+    /* Ensure color is white */
+    color: #ffffff;
+  }
+
+   .error-page-back-button:hover {
+    /* Ensure hover is suitable for dark background */
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+   }
+
+  .error-page-content {
+    padding: 3rem; /* Keep increased padding for content spacing */
+    max-width: 600px; /* Optionally limit content width */
+  }
+
+  .error-page-image {
+    width: 220px;
+    height: 220px;
+    margin-bottom: 3rem;
+  }
+}

@@ -1,6 +1,6 @@
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@800&family=Roboto:wght@400;700&display=swap");
-/* Remove the import for variables.css if you added it */
-/* @import './styles/variables.css'; */
+
+@import "tailwindcss";
 
 :root {
   font-family: "Roboto", sans-serif;
