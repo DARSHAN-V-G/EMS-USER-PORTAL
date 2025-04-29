@@ -5,6 +5,7 @@ import LoginPage from "./pages/Auth/LoginPage";
 import ErrorPage from "./pages/Auth/ErrorPage.tsx";
 import SignUpPage from "./pages/Auth/SignupPage.tsx";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import EventsPage from "./pages/eventbrowse/registeredevents/eventspage.tsx";
 
 function App() {
   return (
@@ -15,6 +16,8 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/error" element={<ErrorPage />} />
           <Route path="/signup" element={<SignUpPage />} /> {/* Fixed this */}
+
+          <Route path="/registered-events" element={<EventsPage />} />
         </Routes>
       </div>
     </Router>
