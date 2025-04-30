@@ -1,0 +1,121 @@
+.carousel-card {
+    background: linear-gradient(145deg, #1d2230, #111622);
+    border-radius: 16px; /* Increased corner radius from 12px to 16px */
+    padding: 2rem;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    max-width: 500px;
+    width: 100%;
+    margin: auto;
+    margin-bottom: 2rem;
+    transition: transform 0.3s ease;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    /* Adding clip-path for slanted bottom */
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - 30px), 0 100%);
+  }
+  
+  .carousel-card:hover {
+    transform: translateY(-5px);
+    transition: transform 0.3s ease;
+  }
+  
+  .carousel-content {
+    color: white;
+    font-size: 1.5rem;
+    font-weight: 600;
+    text-align: center;
+    padding: 2rem;
+    background: linear-gradient(135deg, #242c3b 0%, #4cc35c 100%);
+    height: 300px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .carousel-image {
+    width: 100%;
+    height: 300px;
+    border-radius: 1rem;
+    object-fit: cover;
+    display: block;
+  }
+  
+  /* Desktop + widescreen support */
+  @media (min-width: 768px) {
+    .carousel-card {
+      max-width: 1000px; /* Add a max width */
+      width: 90%; /* Make it less wide on desktop */
+      height: 300px;
+      margin-left: auto;
+      margin-right: auto;
+      border-radius: 20px; /* Even more rounded corners on desktop */
+      clip-path: polygon(0 0, 100% 0, 100% calc(100% - 25px), 0 100%);
+    }
+  
+    .carousel-content {
+      font-size: 2rem;
+    }
+
+    .carousel-image {
+      height: 350px; /* Slightly taller on desktop */
+    }
+  }
+
+  @media (max-width: 640px) {
+    .carousel-image, .carousel-content {
+      height: 200px;
+    }
+  }
+
+  /* Overlay for text on image */
+  .absolute {
+    position: absolute;
+  }
+  
+  .inset-0 {
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+  }
+  
+  /* Modified gradient overlay on the image to remove green tint */
+  .bg-gradient-overlay {
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.7));
+  }
+  
+  /* Make text more prominent */
+  .carousel-title {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-bottom: 0.75rem;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+  }
+  
+  .carousel-subtitle {
+    font-size: 1.25rem;
+    opacity: 0.95;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  }
+  
+  @media (max-width: 768px) {
+    .carousel-card {
+      clip-path: polygon(0 0, 100% 0, 100% calc(100% - 20px), 0 100%);
+    }
+    
+    .carousel-image {
+      height: 220px;
+    }
+    
+    .carousel-title {
+      font-size: 1.75rem;
+    }
+    
+    .carousel-subtitle {
+      font-size: 1rem;
+    }
+  }
