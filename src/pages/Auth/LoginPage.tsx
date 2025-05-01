@@ -41,7 +41,7 @@ const LoginPage: React.FC = () => {
       
   
       // redirect to homepage/dashboard
-      navigate('/registered-events'); 
+      navigate('/homepage'); 
   
     } catch (error: any) {
       console.error(error);
