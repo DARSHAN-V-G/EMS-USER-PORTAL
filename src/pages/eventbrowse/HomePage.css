@@ -1,0 +1,68 @@
+/* Remove or comment out old slanted styles if they exist */
+/* .slanted-container { ... } */
+/* .slanted-green { ... } */
+/* .slanted-content { ... } */
+
+/* Main container */
+.home-container {
+    position: relative; /* Establishes positioning context */
+    min-height: 100vh;
+    width: 100%;
+    overflow: hidden; /* Prevents pseudo-elements from causing scroll */
+  }
+  
+  /* Background element - holds base color and pseudo-element */
+  .home-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #242833; /* Dark gray base background */
+    z-index: 0; /* Ensure it's behind content */
+  }
+  
+  /* Green shape using ::after pseudo-element - Updated */
+  .home-background::after {
+    content: '';
+    position: absolute;
+    top: 0; /* Changed from bottom: 0 */
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #4cc35c; /* Green color */
+    /* Updated clip-path for the desired slant */
+    clip-path: polygon(0% 100%, 45% 10%, 100% 35%, 100% 100%);
+    box-shadow: -4px 0 20px rgba(0, 0, 0, 0.2); /* Added soft shadow */
+    z-index: 0; /* Same level as the parent background element */
+  }
+  
+  /* Content container - adjusted */
+  .home-content {
+    position: relative; /* Needed to stack above the background */
+    width: 100%;
+    height: 100vh; /* Ensure it takes full viewport height */
+    overflow-y: auto; /* Allow vertical scrolling */
+    z-index: 1; /* Ensure content is above the background */
+    color: white; /* Default text color */
+  }
+  
+  
+  /* --- Responsive Adjustments --- */
+  @media (max-width: 768px) {
+    .home-background::after {
+      /* Adjusted clip-path for smaller screens */
+      clip-path: polygon(0% 100%, 60% 10%, 100% 45%, 100% 100%);
+    }
+  
+    /* Remove responsive styles for .slanted-content if they exist */
+    /* .slanted-content h1 { ... } */
+    /* .slanted-content p { ... } */
+  }
+  @media (min-width: 1024px) {
+    main.max-w-\[1200px\] {
+      max-width: 100%;
+      padding-right: 1rem;
+      padding-left: 1rem;
+    }
+  }

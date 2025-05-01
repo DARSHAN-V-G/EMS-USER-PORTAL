@@ -81,9 +81,7 @@
     text-underline-offset: 4px;
     background-color: transparent;
   }
-  .button-variant-link:hover {
-    /* Add hover effect if desired */
-  }
+
   
   /* --- Sizes --- */
   .button-size-default {
