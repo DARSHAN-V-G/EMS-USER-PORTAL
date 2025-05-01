@@ -41,7 +41,7 @@ const LoginPage: React.FC = () => {
       
   
       // redirect to homepage/dashboard
-      navigate('/homepage'); 
+      navigate('/home'); 
   
     } catch (error: any) {
       console.error(error);
@@ -152,7 +152,7 @@ const LoginPage: React.FC = () => {
         <button className="login-button" onClick={handleLogin}>LOGIN</button>
 
         <div className="signup-link">
-          Don’t have an account yet? <Link to="/register">Sign Up</Link>
+          Don’t have an account yet? <Link to="/signup">Sign Up</Link>
         </div>
       </div>
     </div>
