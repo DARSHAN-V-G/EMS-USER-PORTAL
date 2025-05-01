@@ -1,4 +1,4 @@
-import React from "react";
+//import React from "react";
 import "./App.css";
 import LandingPage from "./pages/Auth/LandingPage";
 import LoginPage from "./pages/Auth/LoginPage";
@@ -15,7 +15,7 @@ function App() {
           <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/error" element={<ErrorPage />} />
-          <Route path="/signup" element={<SignUpPage />} /> {/* Fixed this */}
+          <Route path="/register" element={<SignUpPage />} /> {/* Fixed this */}
 
           <Route path="/registered-events" element={<EventsPage />} />
         </Routes>
