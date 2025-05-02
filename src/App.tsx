@@ -7,6 +7,8 @@ import SignUpPage from "./pages/Auth/SignupPage.tsx";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import EventsPage from "./pages/eventbrowse/registeredevents/eventspage.tsx";
 import HomePage from "./pages/eventbrowse/HomePage.tsx";
+import HamburgerMenu from "./pages/Auth/HamburgerMenu";
+
 function App() {
   return (
     <Router>
@@ -18,6 +20,8 @@ function App() {
           <Route path="/signup" element={<SignUpPage />} /> {/* Fixed this */}
           <Route path="/home" element={<HomePage />} /> {/* Assuming this is the home page */}
           <Route path="/registered-events" element={<EventsPage />} />
+          <Route path="/test-menu" element={<HamburgerMenu />} />
+
         </Routes>
       </div>
     </Router>
