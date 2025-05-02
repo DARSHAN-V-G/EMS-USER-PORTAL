@@ -8,9 +8,11 @@ const LoginPage: React.FC = () => {
   const [rememberMe, setRememberMe] = useState(false);
   const navigate = useNavigate(); // to redirect after login / reset password
 
+  const API_BASE = 'https://daddy-ems-8lqp.onrender.com';
+
   const handleLogin = async () => {
     try {
-      const response = await fetch('/auth/user/login', {
+      const response = await fetch(`${API_BASE}/auth/user/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -18,7 +20,8 @@ const LoginPage: React.FC = () => {
           password: password,
         }),
       });
-  
+      
+      console.log("Logging in..");
       if (!response.ok) {
         throw new Error('Invalid Roll No or Password');
       }
@@ -55,7 +58,7 @@ const LoginPage: React.FC = () => {
       }
 
       // Step 1: Send rollno to generate code
-      const generateResponse = await fetch('/auth/user/generatecode', {
+      const generateResponse = await fetch(`${API_BASE}/auth/user/generatecode`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ rollno: rollNo }),
@@ -69,7 +72,7 @@ const LoginPage: React.FC = () => {
       if (!code) return;
 
       // Step 2: Verify the code
-      const verifyResponse = await fetch('/auth/user/verifycode', {
+      const verifyResponse = await fetch(`${API_BASE}/auth/user/verifycode`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ rollno: rollNo, code }),
@@ -85,7 +88,7 @@ const LoginPage: React.FC = () => {
       const newPassword = prompt('Enter your new password:');
       if (!newPassword) return;
 
-      const resetResponse = await fetch('/auth/user/resetpassword', {
+      const resetResponse = await fetch(`${API_BASE}/auth/user/resetpassword`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ rollno: rollNo, token, newPassword }),
