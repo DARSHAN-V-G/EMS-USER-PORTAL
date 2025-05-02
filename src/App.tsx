@@ -8,6 +8,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import EventsPage from "./pages/eventbrowse/registeredevents/eventspage.tsx";
 import HomePage from "./pages/eventbrowse/HomePage.tsx";
 import HamburgerMenu from "./pages/Auth/HamburgerMenu";
+import Notifications from "./pages/eventbrowse/inbox/Notifications.tsx";
 
 function App() {
   return (
@@ -21,7 +22,7 @@ function App() {
           <Route path="/home" element={<HomePage />} /> {/* Assuming this is the home page */}
           <Route path="/registered-events" element={<EventsPage />} />
           <Route path="/test-menu" element={<HamburgerMenu />} />
-
+          <Route path="/notifications" element={<Notifications />} />
         </Routes>
       </div>
     </Router>
