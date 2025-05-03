@@ -1,125 +1,163 @@
 .event-card {
-    width: 100%;
-    height: 340px; /* Increased height to make cards longer */
-    position: relative;
-    margin-bottom: 0px;
-    perspective: 1000px;
-    border-radius: 12px !important;
-    box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.0) !important;
-    background-color: transparent !important;
-  }
+  background-color: #101a2b; /* Dark background from club card */
+  width: 260px; /* Width from club card */
+  min-height: 280px; /* Increased min-height to make cards longer */
+  padding: 1.6rem 1.4rem; /* Padding from club card */
+  color: #f0f0f0; /* Text color from club card */
+  position: relative;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.7); /* Shadow from club card */
+  border-radius: 12px; /* Rounded corners */
+  border: 4px solid #38ef7d; /* Green border from club card */
+  transform: skewY(-5deg); /* Skew effect */
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  margin-bottom: 1rem; /* Add some bottom margin for spacing in the grid */
+}
+
+.event-card:hover {
+  transform: skewY(-5deg) scale(1.05); /* Hover effect */
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.8);
+}
+
+/* Counter-skew content inside the card */
+.event-card > * {
+  transform: skewY(5deg);
+}
+
+.event-card-content {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  padding: 20px;
+  border-radius: 22px ;
+  border-bottom-right-radius: 50px  !important;
+  border-top-left-radius: 50px  !important;
+  color: white;
   
-  .event-card-content {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    padding: 20px;
-    border-radius: 22px ;
-    border-bottom-right-radius: 50px  !important;
-    border-top-left-radius: 50px  !important;
-    color: white;
-    
-    transition: transform 0.3s ease, 0.3s ease;
-    /* Modified clip-path to match the image more precisely */
-    clip-path: polygon(
-      0% 8%,     /* Top-left corner moved down */
-      100% 0%,   /* Top-right corner */
-      100% 92%,  /* Bottom-right corner moved up */
-      0% 100%    /* Bottom-left corner */
-    );
-  }
-  
-  .event-card:hover .event-card-content {
-    transform: translateY(-8px);
-    background-color: #4cc35e !important;
-  }
-  
-  .event-card-inner {
-   
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    border-radius: 12px;
-    padding: 15px 5px 5px 5px; /* Added more top padding to account for slant */
-  }
-  
-  .event-date {
-    font-size: 12px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-bottom: 10px;
-    opacity: 0.8;
+  transition: transform 0.3s ease, 0.3s ease;
+  /* Modified clip-path to match the image more precisely */
+  clip-path: polygon(
+    0% 8%,     /* Top-left corner moved down */
+    100% 0%,   /* Top-right corner */
+    100% 92%,  /* Bottom-right corner moved up */
+    0% 100%    /* Bottom-left corner */
+  );
+}
+
+.event-card:hover .event-card-content {
+  transform: translateY(-8px);
+  background-color: #1f2937 !important;
+}
+
+.event-card-inner {
+ 
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  border-radius: 12px;
+  padding: 15px 5px 5px 5px; /* Added more top padding to account for slant */
+}
+
+.event-date {
+  font-size: 1.05rem;
+  color: #d4d4d4;
+  margin-top: auto; /* Pushes date towards the bottom */
+  margin-bottom: 0.4rem;
+}
+
+.event-name {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin-bottom: 0.7rem;
+}
+
+.event-organizer {
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #dcdcdc;
+  margin-bottom: 0.5rem;
+}
+
+.favorite-button {
+  position: absolute;
+  top: 10px; /* Position inside the card */
+  right: 10px;
+  background: transparent;
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  transform: skewY(5deg); /* Counter-skew the button */
+  z-index: 2; /* Ensure it's clickable */
+}
+
+.heart-icon {
+  stroke-width: 2px;
+  transition: transform 0.2s ease, fill 0.2s ease;
+  /* No skew needed here as parent button is counter-skewed */
+}
+
+.heart-icon.liked {
+  fill: #38ef7d; /* Use green for liked state */
+  color: #38ef7d;
+  transform: scale(1.2);
+}
+
+/* Add media queries for responsive design */
+@media (max-width: 640px) {
+  .event-card {
+    width: 180px; /* Smaller width for mobile */
+    padding: 1rem;
   }
   
   .event-name {
-    font-size: 22px;
-    font-weight: 600;
-    margin-bottom: 8px;
+    font-size: 1.2rem;
+  }
+  
+  .event-date {
+    font-size: 0.9rem;
   }
   
   .event-organizer {
-    font-size: 14px;
-    opacity: 0.85;
-    margin-bottom: auto;
+    font-size: 0.9rem;
+  }
+  
+  .event-card-inner {
+    padding: 10px 5px 5px 5px; /* Slightly reduced padding */
   }
   
   .favorite-button {
-    position: absolute;
-    top: 15px;
-    right: 15px;
-    background: transparent;
-    border: none;
-    color: white;
-    cursor: pointer;
-    padding: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 30px;
-    height: 30px;
+    top: 8px;
+    right: 8px;
+    width: 24px;
+    height: 24px;
   }
-  
-  .heart-icon {
-    stroke-width: 2px;
-    transition: transform 0.2s ease, fill 0.2s ease;
+}
+
+/* Responsive adjustments from club card */
+@media (max-width: 768px) {
+  .event-card {
+    width: 180px; /* Smaller width for mobile */
+    min-height: 240px; /* Adjusted */
   }
-  
-  .heart-icon.liked {
-    fill: white;
-    transform: scale(1.2);
-  }
-  
-  /* Add media queries for responsive design */
-  @media (max-width: 640px) {
-    .event-card {
-      height: 280px; /* Increased from 200px to make cards longer */
-    }
-    
-    .event-name {
-      font-size: 18px;
-    }
-    
-    .event-date {
-      font-size: 11px;
-    }
-    
-    .event-organizer {
-      font-size: 12px;
-    }
-    
-    .event-card-inner {
-      padding: 10px 5px 5px 5px; /* Slightly reduced padding */
-    }
-    
-    .favorite-button {
-      top: 10px;
-      right: 10px;
-    }
-  }
-  
-  /* Event card wrapper - removing padding and rotation to ensure consistent alignment */
-  .event-card-wrapper {
-    margin: 0;
-    padding: 0;
-    transform: none;
-  }
+}
+
+/* Event card wrapper - removing padding and rotation to ensure consistent alignment */
+.event-card-wrapper {
+  /* Reset any previous styles if necessary */
+  margin: 0;
+  padding: 0;
+  transform: none;
+  display: flex; /* Helps center the card if grid cell is larger */
+  justify-content: center; /* Center card horizontally */
+  align-items: center; /* Center card vertically */
+}

@@ -46,8 +46,9 @@ const HomePage: React.FC = () => {
           />
           
           {/* 2. Event Tabs */}
-          {/* <EventTabs activeTab={activeTab} setActiveTab={setActiveTab} /> */}
-
+          <EventTabs activeTab={activeTab} setActiveTab={setActiveTab} />
+          <div className="filters mb-6"></div>
+          <div className="filters mb-6"></div>
           {/* 3. Events Grid */}
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 xs:gap-4 md:gap-6 relative z-10 pb-8">
             {events.map((event, index) => (

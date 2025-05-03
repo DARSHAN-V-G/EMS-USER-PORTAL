@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import './EventCard.css';
+import './EventCard.css'; // Import the updated CSS
 import { Heart } from 'lucide-react';
 
 // Define the type for the event prop
@@ -12,39 +12,35 @@ interface Event {
 
 interface EventCardProps {
   event: Event;
-  className?: string;
+  // className prop might not be needed anymore unless used for specific overrides
 }
 
-const EventCard: React.FC<EventCardProps> = ({ event, className = "" }) => {
+const EventCard: React.FC<EventCardProps> = ({ event }) => {
   const [isLiked, setIsLiked] = useState(false);
-  
-  // Updated colors to match the image more closely
-  const colors = ['#4cc35e', '#355764', '#394C59', '#4c9c8b'];
-  const randomColor = '#355764'; // colors[Math.floor(Math.random() * colors.length)];
-  
+
   return (
-    <div className={`event-card ${className}`}>
-      <div className="event-card-content" style={{ backgroundColor: randomColor }}>
-        <div className="event-card-inner">
-          <div className="event-date">{event.date}</div>
-          <h3 className="event-name">{event.name}</h3>
-          <p className="event-organizer">{event.organizer}</p>
-          
-          <button 
-            className="favorite-button" 
-            aria-label={isLiked ? "Remove from favorites" : "Add to favorites"}
-            onClick={(e) => {
-              e.stopPropagation(); // Prevent card click
-              setIsLiked(!isLiked);
-            }}
-          >
-            <Heart 
-              className={`heart-icon ${isLiked ? 'liked' : ''}`} 
-              fill={isLiked ? "white" : "none"}
-            />
-          </button>
-        </div>
-      </div>
+    // Use the 'event-card' class which now has the club-card styles
+    <div className="event-card">
+      {/* Map event data to the corresponding elements */}
+      <div className="event-organizer">{event.organizer}</div>
+      <div className="event-name">{event.name}</div>
+      <div className="event-date">{event.date}</div>
+
+      {/* Favorite button - positioned absolutely within the card */}
+      <button
+        className="favorite-button"
+        aria-label={isLiked ? "Remove from favorites" : "Add to favorites"}
+        onClick={(e) => {
+          e.stopPropagation(); // Prevent card click if needed
+          setIsLiked(!isLiked);
+        }}
+      >
+        <Heart
+          className={`heart-icon ${isLiked ? 'liked' : ''}`}
+          fill={isLiked ? "#38ef7d" : "none"} // Use green fill when liked
+          color={isLiked ? "#38ef7d" : "white"} // Change stroke color too
+        />
+      </button>
     </div>
   );
 };
