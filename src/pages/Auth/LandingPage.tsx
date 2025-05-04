@@ -19,12 +19,7 @@ const LandingPage: React.FC = () => {
       <h1 className="title-container">
         Event Management<br />System
       </h1>
-      {/* Alternative if specific styling per line is needed:
-      <h1 className="title-container">
-        <span className="title-line-1">Event Management</span>
-        <span className="title-line-2">System</span>
-      </h1>
-      */}
+      
 
       <div className="tagline-container">
         <span className="tagline-text">Click. Register. Show up.</span>
