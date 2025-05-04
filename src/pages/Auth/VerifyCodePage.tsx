@@ -1,11 +1,10 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import axios from "axios";
-import "./SignUpPage.css";
 
 const BASE_URL = "https://daddy-ems-8lqp.onrender.com";
 
-const VerifyPage = () => {
+const VerifyCodePage = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -16,30 +15,47 @@ const VerifyPage = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
-
-
-    setLoading(true); // Set loading to true when the request is made
+    setLoading(true);
+    setMessage("");
 
     try {
-      await axios.post(`${BASE_URL}/auth/user/signup`, {
+      const response = await axios.post(`${BASE_URL}/auth/user/signup`, {
         ...formData,
         yearofstudy: parseInt(formData.yearofstudy),
         code,
       });
 
-      setMessage("Signup successful! Redirecting to login...");
-      setTimeout(() => navigate("/login"), 2000);
-    } catch (err) {
-      setMessage("Signup failed. Please check your code or details.");
-      console.error(err);
-    } finally {
-      setLoading(false); // Reset loading state after the request completes
-    }
-  };
+      if (response.status === 201) {
+        setMessage("Signup successful! Redirecting to login...");
+        setTimeout(() => navigate("/login"), 2000);
+      }
+    } catch (err: any) {
+      if (axios.isAxiosError(err) && err.response) {
+        const status = err.response.status;
+        const msg = err.response.data?.message || "Unknown error";
 
-  const handleCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setCode(e.target.value);
+        switch (status) {
+          case 400:
+            setMessage("Invalid details or incorrect code.");
+            break;
+          case 409:
+            setMessage("User already exists.");
+            break;
+          case 410:
+            setMessage("Verification code has expired.");
+            break;
+          case 500:
+            setMessage("Server error. Please try again later.");
+            break;
+          default:
+            setMessage(`Error: ${msg}`);
+        }
+      } else {
+        setMessage("Signup failed. Please check your connection.");
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -51,17 +67,17 @@ const VerifyPage = () => {
             type="text"
             placeholder="Enter verification code"
             value={code}
-            onChange={handleCodeChange}
+            onChange={(e) => setCode(e.target.value)}
             required
           />
           <button type="submit" disabled={loading}>
             {loading ? "Verifying..." : "Verify & Signup"}
           </button>
         </form>
-        {message && <p style={{ marginTop: "1rem" }}>{message}</p>}
+        {message && <p style={{ marginTop: "1rem", color: "red" }}>{message}</p>}
       </div>
     </div>
   );
 };
 
-export default VerifyPage;
+export default VerifyCodePage;
