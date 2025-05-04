@@ -1,5 +1,6 @@
 import React from 'react';
-import './EventTabs.css';
+import './EventTabs.css'; // Make sure this line is present and correct
+
 interface EventTabsProps {
   activeTab: string;
   setActiveTab: (tab: string) => void;
@@ -7,11 +8,10 @@ interface EventTabsProps {
 
 const EventTabs: React.FC<EventTabsProps> = ({ activeTab, setActiveTab }) => {
   return (
-   
-    <div className="filters mb-6"> 
+    // Removed mb-6 here as it's now in the CSS, but you can keep it if preferred
+    <div className="filters"> 
       <button
         onClick={() => setActiveTab("upcoming")}
-       
         className={`pill ${activeTab === "upcoming" ? "active" : ""}`}
       >
         Upcoming
@@ -28,10 +28,8 @@ const EventTabs: React.FC<EventTabsProps> = ({ activeTab, setActiveTab }) => {
       >
         Club Info
       </button>
-      {/* Add the fourth Filter button */}
       <button
-        // Add onClick handler if needed for filter functionality
-        className="pill" // Not active by default
+        className="pill" 
       >
         Filter
       </button>

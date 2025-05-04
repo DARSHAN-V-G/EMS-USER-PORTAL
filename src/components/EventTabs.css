@@ -31,27 +31,37 @@
     color: white;
   }
   
+  /* Styles for the tab container */
   .filters {
     display: flex;
-    justify-content: center;
-    gap: 1rem;
-    margin-bottom: 1rem;
-    flex-wrap: wrap;
+    justify-content: center; /* Center buttons horizontally */
+    gap: 1rem;             /* Space between buttons on desktop */
+    margin-bottom: 1.5rem;   /* Space below the tabs */
+    flex-wrap: wrap;       /* Allow wrapping */
     text-align: center;
+    padding-left: 0.5rem;  /* Add slight padding to prevent touching edges */
+    padding-right: 0.5rem; /* Add slight padding to prevent touching edges */
   }
   
+  /* Styles for individual tab buttons */
   .pill {
-    background: #2f3542;
-    border-radius: 12px;
-    padding: 0.5rem 1rem;
-    color: white;
-    border: none;
-    font-weight: 600;
+    background: #2f3542;    /* Default background */
+    border-radius: 12px;    /* Rounded corners */
+    padding: 0.5rem 1rem;   /* Button padding */
+    color: white;           /* Default text color */
+    border: none;           /* No border */
+    font-weight: 600;       /* Medium font weight */
+    cursor: pointer;        /* Pointer cursor */
+    transition: background-color 0.2s ease, color 0.2s ease; /* Smooth transition */
+    flex-shrink: 0;         /* Prevent shrinking */
+    flex-grow: 0;           /* Prevent growing */
+    white-space: nowrap;    /* Prevent text wrapping inside button */
   }
   
+  /* Styles for the active tab button */
   .pill.active {
-    background: #38ef7d;
-    color: #000;
+    background: #38ef7d;    /* Green background for active */
+    color: #000;           /* Black text for active */
   }
   
   .club-grid {
@@ -123,21 +133,31 @@
     color: #ffffff;
   }
   
+  /* Mobile view adjustments */
   @media (max-width: 768px) {
     .club-header {
-      flex-direction: column;
+      
       align-items: flex-start;
     }
   
     .filters {
-      display: flex; 
-      justify-content: center; 
-      flex-wrap: wrap; 
-      gap: 0.5rem; 
+      gap: 0.75rem;          /* Slightly smaller gap on mobile */
+      justify-content: center; /* Ensure centering */
+      flex-direction: row !important;
+      width: auto; 
+      margin-left: auto;
+      margin-right: auto;
+      /* Ensure items don't stretch */
+      align-items: center; 
     }
   
     .pill {
-      flex-grow: 0; 
+      /* Explicitly prevent stretching */
+      flex-basis: auto; /* Let the button size itself based on content */
+      flex-grow: 0;
+      flex-shrink: 0;
+      /* Add a minimum width if needed, e.g., min-width: 80px; */
+      width: auto; 
     }
   
     .club-card {
@@ -153,4 +173,24 @@
     .club-card .events {
       font-size: 0.9rem;
     }
+  }
+
+  /* Styles for the tab container on mobile */
+  .filters {
+    display: flex;         /* Use flexbox */
+    flex-wrap: wrap;       /* Allow buttons to wrap */
+    justify-content: center; /* Center the buttons on each line */
+    gap: 0.75rem;          /* Space between buttons */
+    align-items: center;   /* Align items vertically if they wrap */
+    /* Ensure container doesn't force full width on children if it's narrow */
+    width: 100%; /* Or adjust as needed based on parent */
+  }
+
+  /* Styles for individual tab buttons on mobile */
+  .pill {
+    flex-basis: auto; /* Size based on content */
+    flex-grow: 0;     /* Don't grow */
+    flex-shrink: 0;   /* Don't shrink */
+    /* Explicitly set width to auto just in case */
+    width: auto; 
   }
