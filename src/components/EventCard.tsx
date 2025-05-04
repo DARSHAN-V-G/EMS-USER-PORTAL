@@ -26,21 +26,7 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => {
       <div className="event-name">{event.name}</div>
       <div className="event-date">{event.date}</div>
 
-      {/* Favorite button - positioned absolutely within the card */}
-      <button
-        className="favorite-button"
-        aria-label={isLiked ? "Remove from favorites" : "Add to favorites"}
-        onClick={(e) => {
-          e.stopPropagation(); // Prevent card click if needed
-          setIsLiked(!isLiked);
-        }}
-      >
-        <Heart
-          className={`heart-icon ${isLiked ? 'liked' : ''}`}
-          fill={isLiked ? "#38ef7d" : "none"} // Use green fill when liked
-          color={isLiked ? "#38ef7d" : "white"} // Change stroke color too
-        />
-      </button>
+      
     </div>
   );
 };
