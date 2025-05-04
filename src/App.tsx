@@ -4,6 +4,7 @@ import LandingPage from "./pages/Auth/LandingPage";
 import LoginPage from "./pages/Auth/LoginPage";
 import ErrorPage from "./pages/Auth/ErrorPage.tsx";
 import SignUpPage from "./pages/Auth/SignupPage.tsx";
+import VerifyCodePage from "./pages/Auth/VerifyCodePage"; 
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import EventsPage from "./pages/eventbrowse/registeredevents/eventspage.tsx";
 import HomePage from "./pages/eventbrowse/HomePage.tsx";
@@ -20,6 +21,7 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/error" element={<ErrorPage />} />
           <Route path="/signup" element={<SignUpPage />} />
+           <Route path="/verify" element={<VerifyCodePage />} /> 
           <Route path="/home" element={<HomePage />} />
           <Route path="/registered-events" element={<EventsPage />} />
           <Route path="/club-info" element={<ClubInfoPage />} />
