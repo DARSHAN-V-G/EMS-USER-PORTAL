@@ -1,32 +1,31 @@
 import React, { useState } from 'react';
-import './EventCard.css'; // Import the updated CSS
-import { Heart } from 'lucide-react';
+import './EventCard.css';
 
-// Define the type for the event prop
+// Updated Event interface to match API response
 interface Event {
   id: number;
   name: string;
-  organizer: string;
+  about?: string;
   date: string;
+  venue?: string;
+  event_type?: string;
+  event_category?: string;
+  organizer: string;
+  status?: string;
 }
 
 interface EventCardProps {
   event: Event;
-  // className prop might not be needed anymore unless used for specific overrides
 }
 
 const EventCard: React.FC<EventCardProps> = ({ event }) => {
   const [isLiked, setIsLiked] = useState(false);
 
   return (
-    // Use the 'event-card' class which now has the club-card styles
     <div className="event-card">
-      {/* Map event data to the corresponding elements */}
       <div className="event-organizer">{event.organizer}</div>
       <div className="event-name">{event.name}</div>
       <div className="event-date">{event.date}</div>
-
-      
     </div>
   );
 };
