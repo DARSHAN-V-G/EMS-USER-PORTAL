@@ -10,7 +10,7 @@ const LandingPage: React.FC = () => {
   };
 
   const handleRegisterClick = () => {
-    navigate('/register');
+    navigate('/signup');
   };
 
   return (
@@ -19,7 +19,7 @@ const LandingPage: React.FC = () => {
       <h1 className="title-container">
         Event Management<br />System
       </h1>
-      
+
 
       <div className="tagline-container">
         <span className="tagline-text">Click. Register. Show up.</span>

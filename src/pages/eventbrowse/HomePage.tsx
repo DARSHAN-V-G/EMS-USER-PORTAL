@@ -7,7 +7,7 @@ import Header from "../../components/Header"; // Import the new Header component
 import './HomePage.css'; // Keep your existing CSS for the background
 import URL from '../../links'
 
-import { mockEventData } from "../../assets/sampleData";
+import { mockEventData,mockEventPosters } from "../../assets/sampleData";
 interface Event {
   id: number;
   name: string;
@@ -60,7 +60,8 @@ const HomePage: React.FC = () => {
             // Format the events to include organizer field
             const formattedEvents = mockResponse.data.map((event: Event) => ({
               ...event,
-              organizer: event.club_name // Use club_name as organizer for EventCard
+              organizer: event.club_name, // Use club_name as organizer for EventCard
+              poster: mockEventPosters[event.id]
             }));
 
             setEvents(formattedEvents);
@@ -142,9 +143,9 @@ const HomePage: React.FC = () => {
       <div className="home-background"></div>
 
       <div className="home-content relative z-10 w-full h-full overflow-y-auto">
-        <Header />
+    <Header />
 
-        <main className="px-4 pt-4 pb-8 max-w-[1200px] mx-auto">
+    <main className="px-4 pt-4 pb-8 max-w-[1200px] mx-auto">
           <HeroBanner
             image="https://images.unsplash.com/photo-1540575467063-178a50c2df87?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&h=400&q=80"
             overlayText={{
