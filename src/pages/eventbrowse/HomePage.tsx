@@ -7,6 +7,7 @@ import Header from "../../components/Header"; // Import the new Header component
 import './HomePage.css'; // Keep your existing CSS for the background
 import URL from '../../links'
 
+import { mockEventData } from "../../assets/sampleData";
 interface Event {
   id: number;
   name: string;
@@ -30,76 +31,112 @@ const HomePage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
+  const USE_MOCK_DATA = true; // Set to false to use real API
   useEffect(() => {
-    const fetchEvents = async () => {
-      setLoading(true);
-      setError(null);
+  const fetchEvents = async () => {
+    setLoading(true);
+    setError(null);
+    if (USE_MOCK_DATA) {
+        // Use mock data with artificial delay to simulate network request
+        setTimeout(() => {
+          try {
+            let mockResponse;
 
-      // Determine the endpoint based on activeTab
-      let endpoint = "";
-      switch(activeTab) {
-        case "upcoming":
-          endpoint = `${URL}/user/events/upcoming`;
-          break;
-        case "past":
-          endpoint = `${URL}/user/events/past`;
-          break;
-        case "club":
-          endpoint = `${URL}/user/events/club`;
-          break;
-        default:
-          endpoint = `${URL}/user/events/upcoming`;
-      }
+            // Map "club" tab to "ongoing" events in the mock data
+            switch (activeTab) {
+              case "upcoming":
+                mockResponse = mockEventData.upcoming;
+                break;
+              case "past":
+                mockResponse = mockEventData.past;
+                break;
+              case "club":
+                mockResponse = mockEventData.ongoing; // Map club to ongoing
+                break;
+              default:
+                mockResponse = mockEventData.upcoming;
+            }
 
-      try {
-        // Get token from storage (same as in LoginPage)
-        const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+            // Format the events to include organizer field
+            const formattedEvents = mockResponse.data.map((event: Event) => ({
+              ...event,
+              organizer: event.club_name // Use club_name as organizer for EventCard
+            }));
 
-        // if (!token) {
-        //   // Redirect to login if no token
-        //   navigate('/login');
-        //   return;
-        // }
-
-        console.log('Fetching from:', endpoint);
-
-        const response = await fetch(endpoint, {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
+            setEvents(formattedEvents);
+            console.log(`Loaded ${formattedEvents.length} ${activeTab} events from mock data`);
+          } catch (err) {
+            console.error("Error loading mock data:", err);
+            setError("Failed to load events. Please try again later.");
+          } finally {
+            setLoading(false);
           }
-        });
+        }, 0); // Simulate network delay of 800ms
 
-        console.log('Response status:', response.status);
-
-        if (!response.ok) {
-          throw new Error(`Error: ${response.status}`);
-        }
-
-        const result = await response.json();
-
-        // Check if the response has the expected structure
-        if (result.data && Array.isArray(result.data)) {
-          // Add organizer field from club_name for compatibility with EventCard
-          const formattedEvents = result.data.map((event: Event) => ({
-            ...event,
-            organizer: event.club_name
-          }));
-
-          setEvents(formattedEvents);
-        } else {
-          throw new Error("Invalid response format");
-        }
-      } catch (err) {
-        console.error("Failed to fetch events:", err);
-        setError("Failed to load events. Please try again later.");
-      } finally {
-        setLoading(false);
+        return; // Exit early to avoid the real API fetch code
       }
-    };
 
-    fetchEvents();
-  }, [activeTab]);
+//     let endpoint = "";
+//     switch(activeTab) {
+//       case "upcoming":
+//         endpoint = `${URL}/user/events/upcoming`;
+//         break;
+//       case "past":
+//         endpoint = `${URL}/user/events/past`;
+//         break;
+//       case "club":
+//         endpoint = `${URL}/user/events/ongoing`;
+//         break;
+//       default:
+//         endpoint = `${URL}/user/events/upcoming`;
+//     }
+
+//     try {
+//       console.log('Active tab:', activeTab);
+//       console.log('Final endpoint:', endpoint);
+
+//       const response = await fetch(endpoint, {
+//         headers: {
+//           'Content-Type': 'application/json'
+//         }
+//       });
+
+//       console.log('Response status:', response.status);
+
+//       if (!response.ok) {
+//         throw new Error(`Error: ${response.status}`);
+//       }
+
+//       const result = await response.json();
+//       console.log('Full API Response:', result);
+
+//       // Check if the response has the expected structure
+//       if (result.data && Array.isArray(result.data)) {
+//         console.log('Events found:', result.data.length);
+
+//         // Add organizer field from club_name for compatibility with EventCard
+//         const formattedEvents = result.data.map((event: Event) => ({
+//           ...event,
+//           organizer: event.club_name
+//         }));
+
+//         setEvents(formattedEvents);
+//       } else {
+//         console.log('Invalid response structure:', result);
+//         throw new Error("Invalid response format");
+//       }
+//     } catch (err) {
+//       console.error("Failed to fetch events:", err);
+//       setError("Failed to load events. Please try again later.");
+//     } finally {
+//       setLoading(false);
+//     }
+  };
+
+  fetchEvents();
+}, [activeTab]);
+
+
   return (
     <div className="home-container">
       <div className="home-background"></div>
