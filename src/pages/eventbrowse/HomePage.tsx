@@ -1,13 +1,15 @@
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import EventCard from "../../components/EventCard";
 import EventTabs from "../../components/EventTabs";
 import HeroBanner from "../../components/HeroBanner";
-import Header from "../../components/Header"; // Import the new Header component
-import './HomePage.css'; // Keep your existing CSS for the background
+import Header from "../../components/Header";
+import EventFilter, { FilterOptions } from "../../components/EventFilter";
+import './HomePage.css';
 import URL from '../../links'
 
-import { mockEventData,mockEventPosters } from "../../assets/sampleData";
+import { mockEventData, mockEventPosters } from "../../assets/sampleData";
+
 interface Event {
   id: number;
   name: string;
@@ -21,15 +23,21 @@ interface Event {
   club_name: string;
   status: string;
   organizer?: string;
+  poster?: string;
 }
 
-const upcomingEvents = `${URL}/user/events/upcoming`
-// Main HomePage Component
 const HomePage: React.FC = () => {
   const [activeTab, setActiveTab] = useState("upcoming");
   const [events, setEvents] = useState<Event[]>([]);
+  const [filteredEvents, setFilteredEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [showFilters, setShowFilters] = useState(false);
+  const [filters, setFilters] = useState<FilterOptions>({
+    eventType: "All"
+  });
+
+
   const navigate = useNavigate();
   const USE_MOCK_DATA = true; // Set to false to use real API
   useEffect(() => {
@@ -136,18 +144,42 @@ const HomePage: React.FC = () => {
 
   fetchEvents();
 }, [activeTab]);
+ useEffect(() => {
+    if (events.length === 0) {
+      setFilteredEvents([]);
+      return;
+    }
 
+    let result = [...events];
+
+    // Filter by event type
+    if (filters.eventType && filters.eventType !== "All") {
+      result = result.filter(event => event.event_type === filters.eventType);
+    }
+
+    // Set filtered events
+    setFilteredEvents(result);
+
+    // Log filter results
+    console.log(`Applied filter: ${filters.eventType}, Found ${result.length} events`);
+
+  }, [events, filters]);
+
+  // Handle filter application
+  const handleApplyFilters = (newFilters: FilterOptions) => {
+    setFilters(newFilters);
+  };
 
   return (
     <div className="home-container">
       <div className="home-background"></div>
 
       <div className="home-content relative z-10 w-full h-full overflow-y-auto">
-    <Header />
+        <Header />
 
-    <main className="px-4 pt-4 pb-8 max-w-[1200px] mx-auto">
+        <main className="px-4 pt-4 pb-8 max-w-[1200px] mx-auto">
           <HeroBanner
-            image="https://images.unsplash.com/photo-1540575467063-178a50c2df87?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&h=400&q=80"
+            image="https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&h=500&fit=crop"
             overlayText={{
               title: "Infinitum",
               subtitle: "An Intra-college event",
@@ -155,8 +187,27 @@ const HomePage: React.FC = () => {
             }}
           />
 
-          <EventTabs activeTab={activeTab} setActiveTab={setActiveTab} />
-          <div className="filters mb-6"></div>
+          <EventTabs
+            activeTab={activeTab}
+            setActiveTab={setActiveTab}
+            onFilterClick={() => setShowFilters(true)}
+          />
+
+          {/* Filter indicator - shows when filters are active */}
+          {filters.eventType !== "All" && (
+            <div className="filter-indicator">
+              <span>Filter: {filters.eventType}</span>
+              <button onClick={() => setFilters({ eventType: "All" })}>Clear</button>
+            </div>
+          )}
+
+          {/* Filter Modal */}
+          <EventFilter
+            isOpen={showFilters}
+            onClose={() => setShowFilters(false)}
+            onApplyFilters={handleApplyFilters}
+            initialFilters={filters}
+          />
 
           {/* Handle loading state */}
           {loading && (
@@ -175,15 +226,15 @@ const HomePage: React.FC = () => {
           {/* Events Grid */}
           {!loading && !error && (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 xs:gap-4 md:gap-6 relative z-10 pb-8">
-              {events.length > 0 ? (
-                events.map((event) => (
+              {filteredEvents.length > 0 ? (
+                filteredEvents.map((event) => (
                   <div key={event.id} className="event-card-wrapper">
                     <EventCard event={event} />
                   </div>
                 ))
               ) : (
                 <div className="col-span-full text-center py-8 text-gray-500">
-                  No events found for this category.
+                  No events found for this category and filter.
                 </div>
               )}
             </div>

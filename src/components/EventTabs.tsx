@@ -6,10 +6,10 @@ interface EventTabsProps {
   setActiveTab: (tab: string) => void;
 }
 
-const EventTabs: React.FC<EventTabsProps> = ({ activeTab, setActiveTab }) => {
+const EventTabs: React.FC<EventTabsProps> = ({ activeTab, setActiveTab, onFilterClick  }) => {
   return (
     // Removed mb-6 here as it's now in the CSS, but you can keep it if preferred
-    <div className="filters"> 
+    <div className="filters">
       <button
         onClick={() => setActiveTab("upcoming")}
         className={`pill ${activeTab === "upcoming" ? "active" : ""}`}
@@ -29,7 +29,8 @@ const EventTabs: React.FC<EventTabsProps> = ({ activeTab, setActiveTab }) => {
         Club Info
       </button>
       <button
-        className="pill" 
+        className="pill"
+        onClick={onFilterClick}
       >
         Filter
       </button>
