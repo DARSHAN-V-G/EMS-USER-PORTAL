@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useParams, useSearchParams, useNavigate,useLocation } from "react-router-dom";
 import EventCard from "../../components/EventCard";
 import EventTabs from "../../components/EventTabs";
 import HeroBanner from "../../components/HeroBanner";
@@ -27,23 +27,47 @@ interface Event {
 }
 
 const HomePage: React.FC = () => {
-  const [activeTab, setActiveTab] = useState("upcoming");
+
+  const location = useLocation();
+const pathname = location.pathname;
+const view = pathname.split('/')[1] || 'upcoming';
+  const [searchParams,setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
   const [events, setEvents] = useState<Event[]>([]);
   const [filteredEvents, setFilteredEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showFilters, setShowFilters] = useState(false);
   const [filters, setFilters] = useState<FilterOptions>({
-    eventType: "All"
+    eventType: searchParams.get("eventType")||"All"
   });
 
+  const ProjName= "PSG Events";
 
-  const navigate = useNavigate();
+  useEffect(() => {
+    switch(view) {
+      case "past":
+        document.title = `Past Events - ${ProjName}`;
+        break;
+      case "club":
+        document.title = `Club Info - ${ProjName}`;
+        break;
+      case "upcoming":
+      default:
+        document.title = `Upcoming Events - ${ProjName}`;
+    }
+  }, [view]);
+
   const USE_MOCK_DATA = true; // Set to false to use real API
+  // Add this effect to reset filters when view changes
+
   useEffect(() => {
   const fetchEvents = async () => {
     setLoading(true);
     setError(null);
+    setEvents([]);
+  setFilteredEvents([]);
+
     if (USE_MOCK_DATA) {
         // Use mock data with artificial delay to simulate network request
         setTimeout(() => {
@@ -51,7 +75,7 @@ const HomePage: React.FC = () => {
             let mockResponse;
 
             // Map "club" tab to "ongoing" events in the mock data
-            switch (activeTab) {
+            switch (view) {
               case "upcoming":
                 mockResponse = mockEventData.upcoming;
                 break;
@@ -73,7 +97,7 @@ const HomePage: React.FC = () => {
             }));
 
             setEvents(formattedEvents);
-            console.log(`Loaded ${formattedEvents.length} ${activeTab} events from mock data`);
+            console.log(`Loaded ${formattedEvents.length} ${view} events from mock data`);
           } catch (err) {
             console.error("Error loading mock data:", err);
             setError("Failed to load events. Please try again later.");
@@ -84,66 +108,68 @@ const HomePage: React.FC = () => {
 
         return; // Exit early to avoid the real API fetch code
       }
+// Real API implementation
+      let endpoint = "";
+      switch(view) {
+        case "upcoming":
+          endpoint = `${URL}/user/events/upcoming`;
+          break;
+        case "past":
+          endpoint = `${URL}/user/events/past`;
+          break;
+        case "club":
+          endpoint = `${URL}/user/events/ongoing`;
+          break;
+        default:
+          endpoint = `${URL}/user/events/upcoming`;
+      }
 
-//     let endpoint = "";
-//     switch(activeTab) {
-//       case "upcoming":
-//         endpoint = `${URL}/user/events/upcoming`;
-//         break;
-//       case "past":
-//         endpoint = `${URL}/user/events/past`;
-//         break;
-//       case "club":
-//         endpoint = `${URL}/user/events/ongoing`;
-//         break;
-//       default:
-//         endpoint = `${URL}/user/events/upcoming`;
-//     }
+      try {
+        console.log('Current view:', view);
+        console.log('Final endpoint:', endpoint);
 
-//     try {
-//       console.log('Active tab:', activeTab);
-//       console.log('Final endpoint:', endpoint);
+        const response = await fetch(endpoint, {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
 
-//       const response = await fetch(endpoint, {
-//         headers: {
-//           'Content-Type': 'application/json'
-//         }
-//       });
+        console.log('Response status:', response.status);
 
-//       console.log('Response status:', response.status);
+        if (!response.ok) {
+          throw new Error(`Error: ${response.status}`);
+        }
 
-//       if (!response.ok) {
-//         throw new Error(`Error: ${response.status}`);
-//       }
+        const result = await response.json();
+        console.log('Full API Response:', result);
 
-//       const result = await response.json();
-//       console.log('Full API Response:', result);
+        // Check if the response has the expected structure
+        if (result.data && Array.isArray(result.data)) {
+          console.log('Events found:', result.data.length);
 
-//       // Check if the response has the expected structure
-//       if (result.data && Array.isArray(result.data)) {
-//         console.log('Events found:', result.data.length);
+          // Add organizer field from club_name for compatibility with EventCard
+          const formattedEvents = result.data.map((event: Event) => ({
+            ...event,
+            organizer: event.club_name,
+            poster: mockEventPosters[event.id] // Add poster URLs for real data too
+          }));
 
-//         // Add organizer field from club_name for compatibility with EventCard
-//         const formattedEvents = result.data.map((event: Event) => ({
-//           ...event,
-//           organizer: event.club_name
-//         }));
+          setEvents(formattedEvents);
+        } else {
+          console.log('Invalid response structure:', result);
+          throw new Error("Invalid response format");
+        }
+      } catch (err) {
+        console.error("Failed to fetch events:", err);
+        setError("Failed to load events. Please try again later.");
+      } finally {
+        setLoading(false);
+      }
+    };
 
-//         setEvents(formattedEvents);
-//       } else {
-//         console.log('Invalid response structure:', result);
-//         throw new Error("Invalid response format");
-//       }
-//     } catch (err) {
-//       console.error("Failed to fetch events:", err);
-//       setError("Failed to load events. Please try again later.");
-//     } finally {
-//       setLoading(false);
-//     }
-  };
+    fetchEvents();
+  }, [view]); // Only depend on view from URL
 
-  fetchEvents();
-}, [activeTab]);
  useEffect(() => {
     if (events.length === 0) {
       setFilteredEvents([]);
@@ -167,6 +193,12 @@ const HomePage: React.FC = () => {
 
   // Handle filter application
   const handleApplyFilters = (newFilters: FilterOptions) => {
+    if (newFilters.eventType === "All") {
+      searchParams.delete("eventType");
+    } else {
+      searchParams.set("eventType", newFilters.eventType);
+    }
+    setSearchParams(searchParams);
     setFilters(newFilters);
   };
 
@@ -188,8 +220,6 @@ const HomePage: React.FC = () => {
           />
 
           <EventTabs
-            activeTab={activeTab}
-            setActiveTab={setActiveTab}
             onFilterClick={() => setShowFilters(true)}
           />
 
@@ -197,7 +227,10 @@ const HomePage: React.FC = () => {
           {filters.eventType !== "All" && (
             <div className="filter-indicator">
               <span>Filter: {filters.eventType}</span>
-              <button onClick={() => setFilters({ eventType: "All" })}>Clear</button>
+              <button onClick={() =>{
+                searchParams.delete("eventType");
+                setSearchParams(searchParams);
+                setFilters({ eventType: "All" });}}>Clear</button>
             </div>
           )}
 

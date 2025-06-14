@@ -1,33 +1,39 @@
-import React from 'react';
-import './EventTabs.css'; // Make sure this line is present and correct
+import { Link, useLocation } from 'react-router-dom';
 
 interface EventTabsProps {
-  activeTab: string;
-  setActiveTab: (tab: string) => void;
+  onFilterClick: () => void;
 }
 
-const EventTabs: React.FC<EventTabsProps> = ({ activeTab, setActiveTab, onFilterClick  }) => {
+const EventTabs: React.FC<EventTabsProps> = ({ onFilterClick }) => {
+  const location = useLocation();
+  const path = location.pathname;
+
+  // Helper to determine if a tab is active
+  const isActive = (tabPath: string) => path.includes(tabPath);
+
+  // Preserve search params for filters
+  const searchParams = location.search;
+
   return (
-    // Removed mb-6 here as it's now in the CSS, but you can keep it if preferred
     <div className="filters">
-      <button
-        onClick={() => setActiveTab("upcoming")}
-        className={`pill ${activeTab === "upcoming" ? "active" : ""}`}
+      <Link
+        to={`/upcoming${searchParams}`}
+        className={`pill ${isActive("upcoming") ? "active" : ""}`}
       >
         Upcoming
-      </button>
-      <button
-        onClick={() => setActiveTab("past")}
-        className={`pill ${activeTab === "past" ? "active" : ""}`}
+      </Link>
+      <Link
+        to={`/past${searchParams}`}
+        className={`pill ${isActive("past") ? "active" : ""}`}
       >
         Past Events
-      </button>
-      <button
-        onClick={() => setActiveTab("club")}
-        className={`pill ${activeTab === "club" ? "active" : ""}`}
+      </Link>
+      <Link
+        to={`/club${searchParams}`}
+        className={`pill ${isActive("club") ? "active" : ""}`}
       >
         Club Info
-      </button>
+      </Link>
       <button
         className="pill"
         onClick={onFilterClick}
@@ -37,5 +43,4 @@ const EventTabs: React.FC<EventTabsProps> = ({ activeTab, setActiveTab, onFilter
     </div>
   );
 };
-
 export default EventTabs;
