@@ -11,10 +11,11 @@ import HomePage from "./pages/eventbrowse/HomePage.tsx";
 import ClubInfoPage from './pages/Auth/ClubInfoPage';
 import HamburgerMenu from "./pages/Auth/HamburgerMenu";
 import Notifications from "./pages/eventbrowse/inbox/Notifications.tsx";
-
+import { AuthProvider } from "./pages/Auth/AuthContext";
 function App() {
   return (
-    <Router>
+    <AuthProvider>
+      <Router>
       <div className="app">
         <Routes>
           <Route path="/landing" element={<LandingPage />} />
@@ -38,6 +39,7 @@ function App() {
         </Routes>
       </div>
     </Router>
+    </AuthProvider>
   );
 }
 
