@@ -2,21 +2,12 @@ import React, { useState, useEffect } from "react";
 import { MenuIcon, Search, LogIn } from "lucide-react";
 import { Button } from "./ui/button";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../pages/Auth/AuthContext";
+
 
 const Header: React.FC = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const navigate = useNavigate();
-
-  // Check authentication on component load
-  useEffect(() => {
-    const checkAuth = () => {
-      const token = localStorage.getItem('token') || sessionStorage.getItem('token');
-      setIsAuthenticated(!!token);
-    };
-
-    checkAuth();
-  }, []);
-
+  const { isAuthenticated } = useAuth();
   return (
     <div className="sticky top-0 left-0 right-0 z-50 flex justify-center w-full bg-[#1f2937]/85 backdrop-blur-xl shadow-lg border-b border-gray-700/50">
       <header className="flex items-center justify-between w-full max-w-[1200px] px-4 py-3">
