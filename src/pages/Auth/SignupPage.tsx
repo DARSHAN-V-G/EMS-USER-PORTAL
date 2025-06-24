@@ -2,8 +2,9 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./SignUpPage.css";
+import URL from '../../links'
 
-const BASE_URL = "https://daddy-ems-8lqp.onrender.com";
+const BASE_URL = URL;
 
 const SignUpPage = () => {
   const [formData, setFormData] = useState({

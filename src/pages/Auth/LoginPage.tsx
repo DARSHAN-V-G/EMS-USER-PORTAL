@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from "react-router-dom";
 import './LoginPage.css';
+import URL from '../../links'
 
 const LoginPage: React.FC = () => {
   const [rollNo, setRollNo] = useState('');
@@ -8,7 +9,7 @@ const LoginPage: React.FC = () => {
   const [rememberMe, setRememberMe] = useState(false);
   const navigate = useNavigate(); // to redirect after login / reset password
 
-  const API_BASE = 'https://daddy-ems-8lqp.onrender.com';
+  const API_BASE = URL;
 
   const handleLogin = async () => {
     try {

@@ -1,9 +1,9 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import axios from "axios";
+import URL from '../../links'
 
-const BASE_URL = "https://daddy-ems-8lqp.onrender.com";
-
+const BASE_URL = URL;
 const VerifyCodePage = () => {
   const location = useLocation();
   const navigate = useNavigate();
