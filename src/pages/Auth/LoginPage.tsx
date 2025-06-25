@@ -2,12 +2,14 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from "react-router-dom";
 import './LoginPage.css';
 import URL from '../../links'
+import { useAuth } from './AuthContext';
 
 const LoginPage: React.FC = () => {
   const [rollNo, setRollNo] = useState('');
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
   const navigate = useNavigate(); // to redirect after login / reset password
+  const { login } =useAuth();
 
   const API_BASE = URL;
 
@@ -29,7 +31,7 @@ const LoginPage: React.FC = () => {
   
       const data = await response.json();
       const token = data.token;
-
+      login(token,rememberMe)
       if (rememberMe) {
         localStorage.setItem('token', token); // Persistent
       } else {

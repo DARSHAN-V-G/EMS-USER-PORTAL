@@ -23,6 +23,7 @@ interface Event {
 }
 
 const Header: React.FC = () => {
+  
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
   const [isSearchActive, setIsSearchActive] = useState(false);
@@ -30,6 +31,21 @@ const Header: React.FC = () => {
   const [searchResults, setSearchResults] = useState<Event[]>([]);
   const [allEvents, setAllEvents] = useState<Event[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  
+  // Add state to control menu visibility
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  
+  // Toggle menu function
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
+
+  // Handle search function (you need to implement this)
+  const handleSearch = (query: string) => {
+    // Your search implementation
+    setSearchQuery(query);
+  };
+
 /*
   
   // Fetch data
@@ -103,22 +119,24 @@ const Header: React.FC = () => {
   }, [e]);
 */
   return (
-    <div className="sticky top-0 left-0 right-0 z-50 flex justify-center w-full bg-[#1f2937]/85 backdrop-blur-xl shadow-lg border-b border-gray-700/50">
-      <header className="flex items-center justify-between w-full max-w-[1200px] px-4 py-3">
-        <div className="flex items-center gap-4">
-          {/* Conditional rendering based on auth status */}
-          {isAuthenticated ? (
-            <Button
-              variant="ghost"
-              size="icon"
-              className="
-                group
-                rounded-full p-2.5
-                bg-transparent hover:bg-green-500/15
-                focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-2 focus-visible:ring-offset-[#1f2937]
-                transition-all duration-200 ease-in-out
-              "
-            >
+   
+      <div className="sticky top-0 left-0 right-0 z-50 flex justify-center w-full bg-[#1f2937]/85 backdrop-blur-xl shadow-lg border-b border-gray-700/50">
+        <header className="flex items-center justify-between w-full max-w-[1200px] px-4 py-3">
+          <div className="flex items-center gap-4">
+           
+            {isAuthenticated ? (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="
+                  group
+                  rounded-full p-2.5
+                  bg-transparent hover:bg-green-500/15
+                  focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-2 focus-visible:ring-offset-[#1f2937]
+                  transition-all duration-200 ease-in-out
+                "
+                onClick={toggleMenu} // Add onClick handler to toggle menu
+              >
               <MenuIcon className="h-6 w-6 text-white group-hover:text-green-500 transition-colors duration-200" />
             </Button>
           ) : (
