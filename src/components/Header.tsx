@@ -1,4 +1,4 @@
-import React, { useState, useEffect,useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { MenuIcon, Search, LogIn } from "lucide-react";
 import { Button } from "./ui/button";
 import { useNavigate } from "react-router-dom";
@@ -31,6 +31,7 @@ const Header: React.FC = () => {
   const [searchResults, setSearchResults] = useState<Event[]>([]);
   const [allEvents, setAllEvents] = useState<Event[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const searchRef = useRef<HTMLDivElement>(null);
   
   // Add state to control menu visibility
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -40,128 +41,154 @@ const Header: React.FC = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
-  // Handle search function (you need to implement this)
-  const handleSearch = (query: string) => {
-    // Your search implementation
-    setSearchQuery(query);
-  };
-
-/*
-  
-  // Fetch data
+  // Fetch all events when component mounts
   useEffect(() => {
-  
+    const fetchAllEvents = async () => {
+      setIsLoading(true);
       
-      switch(view) {
-        case "upcoming":
-          endpoint = `${URL}/user/events/upcoming`;
-          break;
-        case "past":
-          endpoint = `${URL}/user/events/past`;
-          break;
-        case "club":
-          endpoint = `${URL}/user/events/ongoing`;
-          break;
-        default:
-          endpoint = `${URL}/user/events/upcoming`;
-      }
-      function handleSearch(e) ={
-        e.length &&  setEvents(...events,Response.filter((res) => (res in evalue)));
-        closeSearch();
-      }
-      const closeSearch= ()=>{
-        setEvents([]);
-      }
       try {
-        console.log('Current view:', view);
-        console.log('Final endpoint:', endpoint);
-
-        const response = await fetch(endpoint, {
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        });
-
-        console.log('Response status:', response.status);
-
-        if (!response.ok) {
-          throw new Error(`Error: ${response.status}`);
+        // Fetch from all three endpoints
+        const endpoints = [
+          `${URL}/user/events/upcoming`,
+          `${URL}/user/events/past`,
+          `${URL}/user/events/ongoing`
+        ];
+        
+        const responses = await Promise.all(
+          endpoints.map(endpoint => 
+            fetch(endpoint, {
+              headers: {
+                'Content-Type': 'application/json'
+              }
+            })
+          )
+        );
+        
+        // Check if any response failed
+        const hasError = responses.some(res => !res.ok);
+        if (hasError) {
+          throw new Error("One or more API requests failed");
         }
-
-        const result = await response.json();
-        console.log('Full API Response:', result);
-
-        // Check if the response has the expected structure
-        if (result.data && Array.isArray(result.data)) {
-          console.log('Events found:', result.data.length);
-
-          // Add organizer field from club_name for compatibility with EventCard
-          const formattedEvents = result.data.map((event: Event) => ({
-            ...event,
-            organizer: event.club_name,
-            poster: mockEventPosters[event.id] // Add poster URLs for real data too
-          }));
-
-          setEvents(formattedEvents);
-        } else {
-          console.log('Invalid response structure:', result);
-          throw new Error("Invalid response format");
-        }
+        
+        // Parse JSON from all responses
+        const jsonData = await Promise.all(
+          responses.map(res => res.json())
+        );
+        
+        // Combine all events from different endpoints
+        const combinedEvents = jsonData.flatMap(data => 
+          data.data && Array.isArray(data.data) ? data.data : []
+        ).map((event: Event) => ({
+          ...event,
+          organizer: event.club_name,
+          poster: mockEventPosters[event.id] || '' // Fallback if no poster
+        }));
+        
+        console.log('Total events fetched:', combinedEvents.length);
+        setAllEvents(combinedEvents);
       } catch (err) {
         console.error("Failed to fetch events:", err);
-        setError("Failed to load events. Please try again later.");
+        // Fallback to mock data if API fails
+        const combinedEvents = [
+          ...mockEventData.upcoming.data,
+          ...mockEventData.past.data,
+          ...mockEventData.ongoing.data
+        ].map((event: Event) => ({
+          ...event,
+          organizer: event.club_name,
+          poster: mockEventPosters[event.id]
+        }));
+        
+        setAllEvents(combinedEvents);
       } finally {
-        setLoading(false);
+        setIsLoading(false);
       }
     };
+    
+    fetchAllEvents();
+  }, []);
 
-    fetchEvents();
-  }, [e]);
-*/
+  // Handle search function
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+    
+    if (!query.trim()) {
+      setSearchResults([]);
+      return;
+    }
+    
+    const filteredResults = allEvents.filter(event => 
+      event.name.toLowerCase().includes(query.toLowerCase()) ||
+      event.club_name.toLowerCase().includes(query.toLowerCase()) ||
+      event.event_type.toLowerCase().includes(query.toLowerCase()) ||
+      event.venue.toLowerCase().includes(query.toLowerCase())
+    );
+    
+    setSearchResults(filteredResults);
+  };
+  
+  // Close search dropdown when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+        setIsSearchActive(false);
+      }
+    }
+    
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  // Navigate to event details
+  const handleEventClick = (eventId: number) => {
+    navigate(`/event/${eventId}`);
+    setIsSearchActive(false);
+  };
+
   return (
-   
-      <div className="sticky top-0 left-0 right-0 z-50 flex justify-center w-full bg-[#1f2937]/85 backdrop-blur-xl shadow-lg border-b border-gray-700/50">
-        <header className="flex items-center justify-between w-full max-w-[1200px] px-4 py-3">
-          <div className="flex items-center gap-4">
-           
-            {isAuthenticated ? (
-              <Button
-                variant="ghost"
-                size="icon"
-                className="
-                  group
-                  rounded-full p-2.5
-                  bg-transparent hover:bg-green-500/15
-                  focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-2 focus-visible:ring-offset-[#1f2937]
-                  transition-all duration-200 ease-in-out
-                "
-                onClick={toggleMenu} // Add onClick handler to toggle menu
-              >
+    <div className="sticky top-0 left-0 right-0 z-50 flex justify-center w-full bg-[#1f2937]/85 backdrop-blur-xl shadow-lg border-b border-gray-700/50">
+      <header className="flex items-center justify-between w-full max-w-[1200px] px-4 py-3">
+        <div className="flex items-center gap-4">
+          {isAuthenticated ? (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="
+                group
+                rounded-full p-2.5
+                bg-transparent hover:bg-green-500/15
+                focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-2 focus-visible:ring-offset-[#1f2937]
+                transition-all duration-200 ease-in-out
+              "
+              onClick={toggleMenu}
+            >
               <MenuIcon className="h-6 w-6 text-white group-hover:text-green-500 transition-colors duration-200" />
             </Button>
           ) : (
             <Button
-    variant="default"
-    size="sm"
-    className="
-      relative overflow-hidden
-      text-white font-medium
-      bg-green-600
-      hover:bg-green-400
-      border border-green-600/30
-      shadow-md shadow-green-900/20
-      px-4 py-2 rounded-full
-      transform transition-all duration-200
-      hover:scale-105 hover:shadow-lg hover:shadow-green-900/30
-      focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500
-    "
-    onClick={() => navigate('/landing')}
-  >
-    <span className="flex items-center gap-1.5">
-      <LogIn className="h-4 w-4" />
-      <span>Login / Signup</span>
-    </span>
-  </Button>
+              variant="default"
+              size="sm"
+              className="
+                relative overflow-hidden
+                text-white font-medium
+                bg-green-600
+                hover:bg-green-400
+                border border-green-600/30
+                shadow-md shadow-green-900/20
+                px-4 py-2 rounded-full
+                transform transition-all duration-200
+                hover:scale-105 hover:shadow-lg hover:shadow-green-900/30
+                focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500
+              "
+              onClick={() => navigate('/landing')}
+            >
+              <span className="flex items-center gap-1.5">
+                <LogIn className="h-4 w-4" />
+                <span>Login / Signup</span>
+              </span>
+            </Button>
           )}
 
           <h1 className="text-gray-100 font-semibold text-2xl tracking-wider">
@@ -169,31 +196,55 @@ const Header: React.FC = () => {
           </h1>
         </div>
           
-        
-<div className="search-input-wrapper" style={{ position: 'relative', zIndex: 1001 }}>
-          <div >
+        <div className="search-input-wrapper" ref={searchRef} style={{ position: 'relative', zIndex: 1001 }}>
+          <div>
             <input
               type="text"
               placeholder="Search events..."
-              className ="search-input" 
-              onChange ={(e) => {handleSearch(e.target.value)}}
+              className="search-input"
+              value={searchQuery}
+              onChange={(e) => handleSearch(e.target.value)}
               onFocus={() => setIsSearchActive(true)}
-              onBlur={() => setIsSearchActive(false)}             
             />
           </div>
+          
           {isSearchActive && (
-              <div className="search-results">
+            <div className="search-results">
+              {isLoading ? (
+                <p>Loading events...</p>
+              ) : searchQuery.trim() === "" ? (
+                <p>Type to search events</p>
+              ) : searchResults.length === 0 ? (
+                <p>No events found</p>
+              ) : (
                 <div>
-                {
-                  Array.from({ length: 10 }).map((_, i) => (
-                    <p key={i}>Event {i}</p>
-                  ))
-                }
+                  {searchResults.slice(0, 10).map((event) => (
+                    <div 
+                      key={event.id}
+                      onClick={() => handleEventClick(event.id)}
+                      style={{ 
+                        cursor: 'pointer', 
+                        padding: '8px', 
+                        borderBottom: '1px solid #ccc'
+                      }}
+                    >
+                      <p style={{ fontWeight: 'bold' }}>{event.name}</p>
+                      <p style={{ fontSize: '12px' }}>
+                        {event.club_name} • {event.venue}
+                      </p>
+                    </div>
+                  ))}
+                  
+                  {searchResults.length > 10 && (
+                    <p style={{ textAlign: 'center', fontSize: '12px', padding: '8px' }}>
+                      + {searchResults.length - 10} more results
+                    </p>
+                  )}
+                </div>
+              )}
             </div>
-            
-          </div>
-            )
-          }
+          )}
+          
           <Button
             variant="ghost"
             size="icon"

@@ -12,6 +12,8 @@ import ClubInfoPage from './pages/Auth/ClubInfoPage';
 import HamburgerMenu from "./pages/Auth/HamburgerMenu";
 import Notifications from "./pages/eventbrowse/inbox/Notifications.tsx";
 import { AuthProvider } from "./pages/Auth/AuthContext";
+import ProfilePage from "./pages/Auth/ProfilePage.tsx";
+
 function App() {
   return (
     <AuthProvider>
@@ -23,7 +25,7 @@ function App() {
           <Route path="/error" element={<ErrorPage />} />
           <Route path="/signup" element={<SignUpPage />} />
           <Route path="/verify" element={<VerifyCodePage />} />
-
+          <Route path="/profile" element={<ProfilePage />} />
           <Route path="/upcoming" element={<HomePage />} />
           <Route path="/" element={<Navigate to="/upcoming" replace />} />
           <Route path="/upcoming/:id" element={<h1>coming soon</h1>} />
