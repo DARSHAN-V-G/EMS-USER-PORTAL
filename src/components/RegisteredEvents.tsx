@@ -8,10 +8,6 @@ interface EventType {
   date: string;
 }
 
-interface RegisteredEventsProps {
-  onSelectEvent: (event: EventType) => void;
-}
-
 const events: EventType[] = [
   { id: 1, name: 'Event 1', organizer: 'Organizer', date: 'Date' },
   { id: 2, name: 'Event 2', organizer: 'Organizer', date: 'Date' },
@@ -21,7 +17,7 @@ const events: EventType[] = [
   { id: 6, name: 'Event 6', organizer: 'Organizer', date: 'Date' },
 ];
 
-const RegisteredEvents: React.FC<RegisteredEventsProps> = ({ onSelectEvent }) => {
+const RegisteredEvents: React.FC = () => {
   const navigate = useNavigate();
   
   return (
@@ -35,7 +31,7 @@ const RegisteredEvents: React.FC<RegisteredEventsProps> = ({ onSelectEvent }) =>
       <br />
       <div className="events-list">
         {events.map((event) => (
-          <div key={event.id} className="event-card" onClick={() => onSelectEvent(event)}>
+          <div key={event.id} className="event-card" onClick={() => navigate(`/registered-events/${event.id}`)}>
             <p>{event.date}</p>
             <h3>{event.name}</h3>
             <p>{event.organizer}</p>
