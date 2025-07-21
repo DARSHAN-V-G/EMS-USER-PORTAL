@@ -32,6 +32,7 @@ function App() {
           <Route path="/club" element={<HomePage />} />
           <Route path="/club/:id" element={<h1>coming soon</h1>} />
           <Route path="/registered-events" element={<EventsPage />} />
+          <Route path="/registered-events/:id" element={<EventsPage />} />
           <Route path="/club-info" element={<ClubInfoPage />} />
           <Route path="/:view" element={<HomePage />} />
           <Route path="/test-menu" element={<HamburgerMenu />} />
