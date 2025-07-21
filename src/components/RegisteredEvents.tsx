@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 interface EventType {
   id: number;
@@ -21,9 +22,15 @@ const events: EventType[] = [
 ];
 
 const RegisteredEvents: React.FC<RegisteredEventsProps> = ({ onSelectEvent }) => {
+  const navigate = useNavigate();
+  
   return (
     <div className="registered-events">
-      <h2>REGISTERED EVENTS</h2>
+      <div className="header-container" style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+        <button className="back-button" onClick={() => navigate('/')}>←</button>
+        <h2 className="titleregistered" style={{ flex: 1, textAlign: 'center', margin: 0 }}>REGISTERED EVENTS</h2>
+        <div style={{ width: '40px' }}></div>
+      </div>
       <br />
       <br />
       <div className="events-list">
