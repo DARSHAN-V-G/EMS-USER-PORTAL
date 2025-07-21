@@ -28,7 +28,7 @@ const EventsPage: React.FC = () => {
 
   return (
     <div className="events-page">
-      {!selectedEvent && <RegisteredEvents />}
+      <RegisteredEvents selectedId={id} />
       {selectedEvent && (
         <EventDetails event={selectedEvent} onBack={() => navigate('/registered-events')} />
       )}
