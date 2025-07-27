@@ -2,7 +2,7 @@ import React from 'react';
 import { User, CalendarClock, FileText, Lock, Mail, HelpCircle, LogOut, ChevronRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from './AuthContext';
-import './HamburgerMenu.css'; // <--- Import the CSS
+import './HamburgerMenu.css';
 
 const HamburgerMenu = () => {
   const navigate = useNavigate();
@@ -18,7 +18,6 @@ const HamburgerMenu = () => {
   };
 
   return (
-    <div className="page-wrapper">
     <div className="hamburgermenu">
       {/* Profile Section */}
       <div className="profile-section">
@@ -27,13 +26,12 @@ const HamburgerMenu = () => {
         </div>
         <h2 className="profile-name">StudentName</h2>
         <div className="stats">
-  
         </div>
       </div>
 
       {/* Menu Items */}
       <div className="menu">
-        <MenuItem icon={<User />} label="Profile" />
+        <MenuItem icon={<User />} label="Profile" onClick={() => navigate('/profile')} />
         <MenuItem icon={<CalendarClock />} label="Reminder" />
         <MenuItem icon={<FileText />} label="Registered Events" onClick={handleRegisteredEventsClick} />
         <MenuItem icon={<Lock />} label="Browse All Events" onClick={() => navigate('/upcoming')} />
@@ -46,7 +44,6 @@ const HamburgerMenu = () => {
         <MenuItem icon={<LogOut />} label="Logout" onClick={handleLogout} />
       </div>
     </div>
-  </div>
   );
 };
 

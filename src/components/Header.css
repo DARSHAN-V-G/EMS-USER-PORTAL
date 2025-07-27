@@ -39,3 +39,21 @@
 .search-results p:hover {
     background-color: rgba(56, 239, 125, 0.2); /* Green hover state */
 }
+
+.menu-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 100vw;
+  z-index: 2000;
+  background-color: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(3px);
+}
+
+.menu-container .hamburgermenu {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100vh;
+}
