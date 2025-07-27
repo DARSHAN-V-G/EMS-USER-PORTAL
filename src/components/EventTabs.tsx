@@ -34,6 +34,12 @@ const EventTabs: React.FC<EventTabsProps> = ({ onFilterClick }) => {
       >
         Club Info
       </Link>
+      <Link
+        to={`/registered-events${searchParams}`}
+        className={`pill ${isActive("registered-events") ? "active" : ""}`}
+      >
+        Registered Events
+      </Link>
       <button
         className="pill"
         onClick={onFilterClick}
