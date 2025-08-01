@@ -213,8 +213,9 @@ const Header: React.FC = () => {
             </Button>
           )}
 
-          <h1 className="text-gray-100 font-semibold text-2xl tracking-wider">
-            PSG EVENTS
+          <h1 className="text-gray-100 font-semibold text-2xl tracking-wider"
+          onClick={() => navigate('/upcoming')}
+          >            PSG EVENTS
           </h1>
         </div>
           
