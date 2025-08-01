@@ -1,4 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
+import './EventTabs.css'; // Add this import
 
 interface EventTabsProps {
   onFilterClick: () => void;

@@ -36,7 +36,7 @@
     transition: background-color 0.2s;
     cursor: pointer; 
 }
-.search-results p:hover {
+.search-results:hover {
     background-color: rgba(56, 239, 125, 0.2); /* Green hover state */
 }
 
@@ -49,6 +49,9 @@
   z-index: 2000;
   background-color: rgba(0, 0, 0, 0.4);
   backdrop-filter: blur(3px);
+  display: flex;
+  /* Make sure it's a separate stacking context */
+  isolation: isolate;
 }
 
 .menu-container .hamburgermenu {

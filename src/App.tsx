@@ -13,12 +13,13 @@ import HamburgerMenu from "./pages/Auth/HamburgerMenu";
 import Notifications from "./pages/eventbrowse/inbox/Notifications.tsx";
 import { AuthProvider } from "./pages/Auth/AuthContext";
 import ProfilePage from "./pages/Auth/ProfilePage.tsx";
-
+import Header from "./components/Header.tsx";
 function App() {
   return (
     <AuthProvider>
       <Router>
       <div className="app">
+        <Header />
         <Routes>
           <Route path="/landing" element={<LandingPage />} />
           <Route path="/login" element={<LoginPage />} />
@@ -35,7 +36,7 @@ function App() {
           <Route path="/club/:id" element={<h1>coming soon</h1>} />
           <Route path="/registered-events" element={<EventsPage />} />
           <Route path="/registered-events/:id" element={<EventsPage />} />
-          <Route path="/club-info" element={<ClubInfoPage />} />
+          {/* <Route path="/club-info" element={<ClubInfoPage />} /> */}
           <Route path="/:view" element={<HomePage />} />
           <Route path="/test-menu" element={<HamburgerMenu />} />
           <Route path="/notifications" element={<Notifications />} />

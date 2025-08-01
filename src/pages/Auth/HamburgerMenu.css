@@ -114,3 +114,41 @@
 .logout {
   margin-top: auto;
 }
+
+.menu-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 100vw;
+  z-index: 2000;
+  background-color: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(3px);
+  display: flex;
+}
+
+.menu-container .hamburgermenu {
+  position: relative;
+  height: 100vh;
+}
+
+.close-button {
+  position: absolute;
+  top: 10px;
+  left: 10px; /* Change from right to left */
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.close-button:hover {
+  background: rgba(255, 255, 255, 0.3);
+}

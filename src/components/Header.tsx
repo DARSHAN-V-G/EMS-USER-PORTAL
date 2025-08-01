@@ -4,7 +4,7 @@ import { Button } from "./ui/button";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../pages/Auth/AuthContext";
 import "./Header.css"
-
+import HamburgerMenu from "../pages/Auth/HamburgerMenu"; // Add this import
 import { mockEventData, mockEventPosters } from "../assets/sampleData";
 import URL from '../links';
 
@@ -32,14 +32,35 @@ const Header: React.FC = () => {
   const [allEvents, setAllEvents] = useState<Event[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
   
-  // Add state to control menu visibility
+  // State to control menu visibility
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   
   // Toggle menu function
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
+
+  // Close menu when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      // Simpler logic to check if we clicked outside the menu
+      if (isMenuOpen && menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        // Don't close if we clicked the menu button itself (let the toggle handle that)
+        if (!(event.target as Element).closest('.menu-button')) {
+          console.log('Closing menu from outside click');
+          setIsMenuOpen(false);
+        }
+      }
+    }
+    
+    // Add click listener to document (not mousedown)
+    document.addEventListener("click", handleClickOutside, true);
+    return () => {
+      document.removeEventListener("click", handleClickOutside, true);
+    };
+  }, [isMenuOpen]);
 
   // Fetch all events when component mounts
   useEffect(() => {
@@ -156,6 +177,7 @@ const Header: React.FC = () => {
               variant="ghost"
               size="icon"
               className="
+                menu-button 
                 group
                 rounded-full p-2.5
                 bg-transparent hover:bg-green-500/15
@@ -260,6 +282,16 @@ const Header: React.FC = () => {
           </Button>
         </div>
       </header>
+      
+      {/* Hamburger Menu */}
+      {isMenuOpen && (
+        <div 
+          ref={menuRef} // This ref must be here
+          className="menu-container"
+        >
+          <HamburgerMenu onClose={() => setIsMenuOpen(false)} />
+        </div>
+      )}
     </div>
   );
 };

@@ -28,24 +28,16 @@ const LoginPage: React.FC = () => {
       if (!response.ok) {
         throw new Error('Invalid Roll No or Password');
       }
-  
-      const data = await response.json();
-      const token = data.token;
-      login(token,rememberMe)
-      if (rememberMe) {
-        localStorage.setItem('token', token); // Persistent
-      } else {
-        sessionStorage.setItem('token', token); // Clears on close
-     }
 
-      // maybe data contains a token or user info
+      const data = await response.json();
       console.log('Login successful:', data);
-  
       
-  
-      // redirect to homepage/dashboard
-      navigate('/home'); 
-  
+      // Since your API doesn't return a token, store a simple auth flag
+      const authFlag = "authenticated"; // Just a marker
+      login(authFlag, rememberMe);
+      
+      // Redirect to a valid route that exists in your App.tsx
+      navigate('/upcoming'); // Not /home which doesn't exist
     } catch (error: any) {
       console.error(error);
       alert(error.message || 'Login failed');

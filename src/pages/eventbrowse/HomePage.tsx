@@ -58,11 +58,11 @@ const view = pathname.split('/')[1] || 'upcoming';
     }
   }, [view]);
 
-  const USE_MOCK_DATA = true; // Set to false to use real API
+  const USE_MOCK_DATA = false; // Set to false to use real API
   // Add this effect to reset filters when view changes
 
   useEffect(() => {
-  const fetchEvents = async () => {
+    const fetchEvents = async () => {
     setLoading(true);
     setError(null);
     setEvents([]);
@@ -206,18 +206,19 @@ const view = pathname.split('/')[1] || 'upcoming';
     <div className="home-container">
       <div className="home-background"></div>
 
-      <div className="home-content relative z-10 w-full h-full overflow-y-auto">
-        <Header />
+      
 
-        <main className="px-4 pt-4 pb-8 max-w-[1200px] mx-auto">
-          <HeroBanner
-            image="https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&h=500&fit=crop"
-            overlayText={{
-              title: "Infinitum",
-              subtitle: "An Intra-college event",
-              link: "https://example.com",
-            }}
-          />
+        <main className="relative z-10 px-4 pt-20 pb-8 max-w-[1200px] mx-auto">
+          <div className="mb-6">
+            <HeroBanner
+              image="https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&h=500&fit=crop"
+              overlayText={{
+                title: "Infinitum",
+                subtitle: "An Intra-college event",
+                link: "https://example.com",
+              }}
+            />
+          </div>
 
           <EventTabs
             onFilterClick={() => setShowFilters(true)}
@@ -273,7 +274,6 @@ const view = pathname.split('/')[1] || 'upcoming';
             </div>
           )}
         </main>
-      </div>
     </div>
   );
 };

@@ -1,24 +1,37 @@
 import React from 'react';
-import { User, CalendarClock, FileText, Lock, Mail, HelpCircle, LogOut, ChevronRight } from 'lucide-react';
+import { User, CalendarClock, FileText, Lock, Mail, HelpCircle, LogOut, ChevronRight, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from './AuthContext';
 import './HamburgerMenu.css';
 
-const HamburgerMenu = () => {
+const HamburgerMenu = ({ onClose }: { onClose?: () => void }) => {
   const navigate = useNavigate();
   const { logout } = useAuth();
 
-  const handleRegisteredEventsClick = () => {
-    navigate('/registered-events');
+  // Navigation handlers
+  const handleNavigate = (path: string) => {
+    navigate(path);
+    if (onClose) onClose();
   };
 
   const handleLogout = () => {
-    logout(); // This will clear the token and set isAuthenticated to false
+    logout();
     navigate('/landing');
+    if (onClose) onClose();
   };
 
   return (
     <div className="hamburgermenu">
+      {/* Close button */}
+      {onClose && (
+        <button 
+          className="close-button"
+          onClick={onClose}
+        >
+          <X size={24} />
+        </button>
+      )}
+      
       {/* Profile Section */}
       <div className="profile-section">
         <div className="profile-avatar">
@@ -31,11 +44,11 @@ const HamburgerMenu = () => {
 
       {/* Menu Items */}
       <div className="menu">
-        <MenuItem icon={<User />} label="Profile" onClick={() => navigate('/profile')} />
+        <MenuItem icon={<User />} label="Profile" onClick={() => handleNavigate('/profile')} />
         <MenuItem icon={<CalendarClock />} label="Reminder" />
-        <MenuItem icon={<FileText />} label="Registered Events" onClick={handleRegisteredEventsClick} />
-        <MenuItem icon={<Lock />} label="Browse All Events" onClick={() => navigate('/upcoming')} />
-        <MenuItem icon={<Mail />} label="Inbox" onClick={() => navigate('/notifications')} />
+        <MenuItem icon={<FileText />} label="Registered Events" onClick={() => handleNavigate('/registered-events')} />
+        <MenuItem icon={<Lock />} label="Browse All Events" onClick={() => handleNavigate('/upcoming')} />
+        <MenuItem icon={<Mail />} label="Inbox" onClick={() => handleNavigate('/notifications')} />
         <MenuItem icon={<HelpCircle />} label="Help" />
       </div>
 
