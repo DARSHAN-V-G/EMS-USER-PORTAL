@@ -8,7 +8,7 @@ import EventFilter, { FilterOptions } from "../../components/EventFilter";
 import './HomePage.css';
 import URL from '../../links'
 
-import { mockEventData, mockEventPosters } from "../../assets/sampleData";
+
 
 interface Event {
   id: number;
@@ -147,7 +147,7 @@ const view = pathname.split('/')[1] || 'upcoming';
             const formattedEvents = result.data.map((event: Event) => ({
               ...event,
               organizer: event.club_name,
-              poster: mockEventPosters[event.id] || 'https://source.unsplash.com/random/300x200?event'
+              poster: 'https://source.unsplash.com/random/300x200?event'
             }));
 
             setEvents(formattedEvents);
