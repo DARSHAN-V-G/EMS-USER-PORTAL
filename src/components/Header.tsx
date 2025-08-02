@@ -5,7 +5,6 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../pages/Auth/AuthContext";
 import "./Header.css"
 import HamburgerMenu from "../pages/Auth/HamburgerMenu"; // Add this import
-import { mockEventData, mockEventPosters } from "../assets/sampleData";
 import URL from '../links';
 
 interface Event {
@@ -80,7 +79,8 @@ const Header: React.FC = () => {
             fetch(endpoint, {
               headers: {
                 'Content-Type': 'application/json'
-              }
+              },
+              credentials: 'include'
             })
           )
         );
@@ -101,26 +101,13 @@ const Header: React.FC = () => {
           data.data && Array.isArray(data.data) ? data.data : []
         ).map((event: Event) => ({
           ...event,
-          organizer: event.club_name,
-          poster: mockEventPosters[event.id] || '' // Fallback if no poster
+          organizer: event.club_name
         }));
-        
+
         console.log('Total events fetched:', combinedEvents.length);
         setAllEvents(combinedEvents);
       } catch (err) {
         console.error("Failed to fetch events:", err);
-        // Fallback to mock data if API fails
-        const combinedEvents = [
-          ...mockEventData.upcoming.data,
-          ...mockEventData.past.data,
-          ...mockEventData.ongoing.data
-        ].map((event: Event) => ({
-          ...event,
-          organizer: event.club_name,
-          poster: mockEventPosters[event.id]
-        }));
-        
-        setAllEvents(combinedEvents);
       } finally {
         setIsLoading(false);
       }
