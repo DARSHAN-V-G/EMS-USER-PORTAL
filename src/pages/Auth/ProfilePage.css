@@ -164,3 +164,165 @@ body {
     padding: 50px;
   }
 }
+
+/* Add these styles to your existing ProfilePage.css */
+
+.info-value-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  flex: 1;
+}
+
+.edit-button {
+  background: none;
+  border: none;
+  color: var(--primary-green, #22c55e);
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease;
+  opacity: 0.7;
+}
+
+.edit-button:hover {
+  background-color: rgba(34, 197, 94, 0.1);
+  opacity: 1;
+}
+
+.edit-field-container {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1;
+}
+
+.edit-input {
+  flex: 1;
+  padding: 0.5rem;
+  border: 1px solid var(--primary-green, #22c55e);
+  border-radius: 6px;
+  background-color: rgba(255, 255, 255, 0.05);
+  color: var(--text-light, #ffffff);
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.edit-input:focus {
+  border-color: var(--hover-green, #1ca04d);
+  box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.2);
+}
+
+.edit-input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.edit-actions {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.save-button, .cancel-button {
+  padding: 0.375rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  min-width: 32px;
+  height: 32px;
+}
+
+.save-button {
+  background-color: var(--primary-green, #22c55e);
+  color: white;
+}
+
+.save-button:hover:not(:disabled) {
+  background-color: var(--hover-green, #1ca04d);
+}
+
+.save-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.cancel-button {
+  background-color: rgba(239, 68, 68, 0.8);
+  color: white;
+}
+
+.cancel-button:hover:not(:disabled) {
+  background-color: rgba(239, 68, 68, 1);
+}
+
+.cancel-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Ensure info-item has proper layout for edit functionality */
+.info-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  gap: 1rem;
+}
+
+.info-label {
+  font-weight: 600;
+  color: var(--primary-green, #22c55e);
+  min-width: 120px;
+  flex-shrink: 0;
+}
+
+.info-value {
+  color: var(--text-light, #ffffff);
+  flex: 1;
+}
+
+/* Animation for smooth transitions */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.edit-field-container {
+  animation: fadeIn 0.2s ease;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .info-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  .info-value-container {
+    width: 100%;
+  }
+  
+  .edit-field-container {
+    width: 100%;
+  }
+  
+  .info-label {
+    min-width: auto;
+  }
+}
