@@ -6,9 +6,9 @@ import ErrorPage from "./pages/Auth/ErrorPage.tsx";
 import SignUpPage from "./pages/Auth/SignupPage.tsx";
 import VerifyCodePage from "./pages/Auth/VerifyCodePage";
 import { BrowserRouter as Router, Routes, Route,Navigate } from "react-router-dom";
-import EventsPage from "./pages/eventbrowse/registeredevents/eventspage.tsx";
+import EventDetailPage from "./pages/eventbrowse/registeredevents/EventDetailPage.tsx";
+import RegularEventDetailPage from "./pages/eventbrowse/eventdetails/RegularEventDetailPage.tsx";
 import HomePage from "./pages/eventbrowse/HomePage.tsx";
-import ClubInfoPage from './pages/Auth/ClubInfoPage';
 import HamburgerMenu from "./pages/Auth/HamburgerMenu";
 import Notifications from "./pages/eventbrowse/inbox/Notifications.tsx";
 import { AuthProvider } from "./pages/Auth/AuthContext";
@@ -29,13 +29,13 @@ function App() {
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/upcoming" element={<HomePage />} />
           <Route path="/" element={<Navigate to="/upcoming" replace />} />
-          <Route path="/upcoming/:id" element={<h1>coming soon</h1>} />
+          <Route path="/upcoming/:id" element={<RegularEventDetailPage />} />
           <Route path="/past" element={<HomePage />} />
-          <Route path="/past/:id" element={<h1>coming soon</h1>} />
+          <Route path="/past/:id" element={<RegularEventDetailPage />} />
           <Route path="/club" element={<HomePage />} />
-          <Route path="/club/:id" element={<h1>coming soon</h1>} />
-          <Route path="/registered-events" element={<EventsPage />} />
-          <Route path="/registered-events/:id" element={<EventsPage />} />
+          <Route path="/club/:id" element={<RegularEventDetailPage />} />
+          <Route path="/registered-events" element={<HomePage />} />
+          <Route path="/registered-events/:id" element={<EventDetailPage />} />
           {/* <Route path="/club-info" element={<ClubInfoPage />} /> */}
           <Route path="/:view" element={<HomePage />} />
           <Route path="/test-menu" element={<HamburgerMenu />} />

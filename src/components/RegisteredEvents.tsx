@@ -1,15 +1,22 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import EventCard from './EventCard';
 
 interface EventType {
   id: number;
   name: string;
   organizer: string;
   date: string;
+  poster?: string;
+  about?: string;
+  venue?: string;
+  event_type?: string;
+  event_category?: string;
 }
 
 interface RegisteredEventsProps {
   selectedId?: string;
+  events?: EventType[];
 }
 
 const events: EventType[] = [
@@ -21,8 +28,11 @@ const events: EventType[] = [
   { id: 6, name: 'Event 6', organizer: 'Organizer', date: 'Date' },
 ];
 
-const RegisteredEvents: React.FC<RegisteredEventsProps> = ({ selectedId }) => {
+const RegisteredEvents: React.FC<RegisteredEventsProps> = ({ events: providedEvents }) => {
   const navigate = useNavigate();
+  
+  // Use provided events or fall back to mock data
+  const displayEvents = providedEvents || events;
   
   return (
     <div className="registered-events">
@@ -34,18 +44,21 @@ const RegisteredEvents: React.FC<RegisteredEventsProps> = ({ selectedId }) => {
       <br />
       <br />
       <div className="events-list">
-        {events.map((event) => (
-          <div
-            key={event.id}
-            className={`event-card${selectedId == event.id.toString() ? ' selected' : ''}`}
-            onClick={() => navigate(`/registered-events/${event.id}`)}
-          >
-            <p>{event.date}</p>
-            <h3>{event.name}</h3>
-            <p>{event.organizer}</p>
-            <div className="checkmark">✔️</div>
+        {displayEvents.length > 0 ? (
+          displayEvents.map((event) => (
+            <div
+              key={event.id}
+              className="event-card-wrapper"
+              onClick={() => navigate(`/registered-events/${event.id}`)}
+            >
+              <EventCard event={event} isRegistered={true} />
+            </div>
+          ))
+        ) : (
+          <div className="no-events-message">
+            No registered events found. Register for events from the homepage.
           </div>
-        ))}
+        )}
       </div>
     </div>
   );
