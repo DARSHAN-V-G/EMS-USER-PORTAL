@@ -26,6 +26,12 @@ interface Event {
   poster?: string;
 }
 
+// Add this interface for clubs
+interface Club {
+  id: string;
+  name: string;
+}
+
 const HomePage: React.FC = () => {
 
   const location = useLocation();
@@ -68,59 +74,90 @@ const view = pathname.split('/')[1] || 'upcoming';
 
     
 // Real API implementation
-      let endpoint = "";
-      switch(view) {
-        case "upcoming":
-          endpoint = `${URL}/user/events/upcoming`;
-          break;
-        case "past":
-          endpoint = `${URL}/user/events/past`;
-          break;
-        case "club":
-          endpoint = `${URL}/user/events/ongoing`;
-          break;
-        default:
-          endpoint = `${URL}/user/events/upcoming`;
-      }
-
       try {
-        console.log('Current view:', view);
-        console.log('Final endpoint:', endpoint);
+        // If we're in club view, fetch clubs instead of events
+        if (view === "club") {
+          const clubResponse = await fetch(`${URL}/club/getclubs`, {
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            credentials: 'include'
+          });
 
-        const response = await fetch(endpoint, {
-          headers: {
-            'Content-Type': 'application/json'
+          if (!clubResponse.ok) {
+            throw new Error(`Error: ${clubResponse.status}`);
           }
-        });
 
-        console.log('Response status:', response.status);
+          const clubResult = await clubResponse.json();
+          console.log('Club API Response:', clubResult);
 
-        if (!response.ok) {
-          throw new Error(`Error: ${response.status}`);
-        }
+          if (clubResult.data && Array.isArray(clubResult.data)) {
+            // Transform club data to match event structure for EventCard compatibility
+            const formattedClubs = clubResult.data.map((club: Club, index: number) => ({
+              id: index + 1, // Generate numeric IDs for compatibility
+              name: club.name,
+              about: `Information about ${club.name}`,
+              date: new Date().toISOString(), // Current date
+              venue: "PSG College of Technology",
+              event_type: "Club",
+              event_category: "Club",
+              club_name: club.name,
+              organizer: club.name,
+              status: "active",
+              // Random placeholder image
+              poster: `https://source.unsplash.com/random/300x200?college,club&sig=${index}`
+            }));
 
-        const result = await response.json();
-        console.log('Full API Response:', result);
-
-        // Check if the response has the expected structure
-        if (result.data && Array.isArray(result.data)) {
-          console.log('Events found:', result.data.length);
-
-          // Add organizer field from club_name for compatibility with EventCard
-          const formattedEvents = result.data.map((event: Event) => ({
-            ...event,
-            organizer: event.club_name,
-            poster: mockEventPosters[event.id] // Add poster URLs for real data too
-          }));
-
-          setEvents(formattedEvents);
+            setEvents(formattedClubs);
+          } else {
+            console.log('Invalid club response structure:', clubResult);
+            throw new Error("Invalid club response format");
+          }
         } else {
-          console.log('Invalid response structure:', result);
-          throw new Error("Invalid response format");
+          // Original event fetching logic for upcoming/past events
+          let endpoint = "";
+          switch(view) {
+            case "upcoming":
+              endpoint = `${URL}/user/events/upcoming`;
+              break;
+            case "past":
+              endpoint = `${URL}/user/events/past`;
+              break;
+            case "ongoing":
+              endpoint = `${URL}/user/events/ongoing`;
+              break;
+            default:
+              endpoint = `${URL}/user/events/upcoming`;
+          }
+
+          const response = await fetch(endpoint, {
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            credentials: 'include'
+          });
+
+          if (!response.ok) {
+            throw new Error(`Error: ${response.status}`);
+          }
+
+          const result = await response.json();
+          
+          if (result.data && Array.isArray(result.data)) {
+            const formattedEvents = result.data.map((event: Event) => ({
+              ...event,
+              organizer: event.club_name,
+              poster: mockEventPosters[event.id] || 'https://source.unsplash.com/random/300x200?event'
+            }));
+
+            setEvents(formattedEvents);
+          } else {
+            throw new Error("Invalid response format");
+          }
         }
       } catch (err) {
-        console.error("Failed to fetch events:", err);
-        setError("Failed to load events. Please try again later.");
+        console.error(`Failed to fetch ${view === "club" ? "clubs" : "events"}:`, err);
+        setError(`Failed to load ${view === "club" ? "clubs" : "events"}. Please try again later.`);
       } finally {
         setLoading(false);
       }
