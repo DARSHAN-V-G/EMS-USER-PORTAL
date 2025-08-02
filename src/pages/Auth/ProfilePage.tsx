@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, UserCircle, Loader } from 'lucide-react';
 import './ProfilePage.css';
 import URL from '../../links';
+import { useAuth } from './AuthContext';
 
 interface UserProfile {
   name: string;
@@ -15,6 +16,7 @@ interface UserProfile {
 
 const ProfilePage: React.FC = () => {
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [profile, setProfile] = useState<UserProfile>({
@@ -27,11 +29,11 @@ const ProfilePage: React.FC = () => {
   });
 
   useEffect(() => {
-    const token = localStorage.getItem('token') || sessionStorage.getItem('token');
-    if (!token) {
+    
+    if (!isAuthenticated) {
       navigate('/login');
     }
-  }, [navigate]);
+  }, [isAuthenticated,navigate]);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -50,9 +52,9 @@ const ProfilePage: React.FC = () => {
         
         const response = await fetch(`${URL}/user/fetch/profile`, {
           method: 'GET',
+          credentials: 'include', // This will send the cookies
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}` // Add this line back
           },
         });
 

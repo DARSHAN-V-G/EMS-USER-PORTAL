@@ -18,6 +18,7 @@ const LoginPage: React.FC = () => {
       const response = await fetch(`${API_BASE}/auth/user/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include', // Important: This enables cookies
         body: JSON.stringify({
           rollno: rollNo,
           password: password,
@@ -26,18 +27,19 @@ const LoginPage: React.FC = () => {
       
       console.log("Logging in..");
       if (!response.ok) {
-        throw new Error('Invalid Roll No or Password');
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Invalid Roll No or Password');
       }
 
       const data = await response.json();
       console.log('Login successful:', data);
       
-      // Since your API doesn't return a token, store a simple auth flag
-      const authFlag = "authenticated"; // Just a marker
-      login(authFlag, rememberMe);
+      // The API likely sets HTTP-only cookies on successful login
+      // We just need to update our authentication state
+      login(rollNo, rememberMe); // Store the rollNo as user identifier
       
-      // Redirect to a valid route that exists in your App.tsx
-      navigate('/upcoming'); // Not /home which doesn't exist
+      // Redirect to upcoming events page
+      navigate('/upcoming');
     } catch (error: any) {
       console.error(error);
       alert(error.message || 'Login failed');

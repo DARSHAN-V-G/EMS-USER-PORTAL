@@ -58,8 +58,6 @@ const view = pathname.split('/')[1] || 'upcoming';
     }
   }, [view]);
 
-  const USE_MOCK_DATA = false; // Set to false to use real API
-  // Add this effect to reset filters when view changes
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -68,46 +66,7 @@ const view = pathname.split('/')[1] || 'upcoming';
     setEvents([]);
   setFilteredEvents([]);
 
-    if (USE_MOCK_DATA) {
-        // Use mock data with artificial delay to simulate network request
-        setTimeout(() => {
-          try {
-            let mockResponse;
-
-            // Map "club" tab to "ongoing" events in the mock data
-            switch (view) {
-              case "upcoming":
-                mockResponse = mockEventData.upcoming;
-                break;
-              case "past":
-                mockResponse = mockEventData.past;
-                break;
-              case "club":
-                mockResponse = mockEventData.ongoing; // Map club to ongoing
-                break;
-              default:
-                mockResponse = mockEventData.upcoming;
-            }
-
-            // Format the events to include organizer field
-            const formattedEvents = mockResponse.data.map((event: Event) => ({
-              ...event,
-              organizer: event.club_name, // Use club_name as organizer for EventCard
-              poster: mockEventPosters[event.id]
-            }));
-
-            setEvents(formattedEvents);
-            console.log(`Loaded ${formattedEvents.length} ${view} events from mock data`);
-          } catch (err) {
-            console.error("Error loading mock data:", err);
-            setError("Failed to load events. Please try again later.");
-          } finally {
-            setLoading(false);
-          }
-        }, 0); // Simulate network delay of 800ms
-
-        return; // Exit early to avoid the real API fetch code
-      }
+    
 // Real API implementation
       let endpoint = "";
       switch(view) {

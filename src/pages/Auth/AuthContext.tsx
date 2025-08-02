@@ -2,7 +2,7 @@ import React, { useState, useEffect,createContext } from 'react';
 
 interface AuthContextType {
   isAuthenticated: boolean;
-  login: (token: string, remember: boolean) => void;
+  login: () => void;
   setIsAuthenticated: React.Dispatch<React.SetStateAction<boolean>>;
   logout: () => void;
 }
@@ -11,29 +11,40 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 const AuthProvider: React.FC<{children: React.ReactNode}> = ({children}) => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
-  useEffect(() => {
-    const checkAuth = () => {
-      const token = localStorage.getItem('token') || sessionStorage.getItem('token');
-      setIsAuthenticated(!!token);
-    };
 
-    checkAuth();
-  }, []);
-
-  const login = (token: string, remember: boolean) => {
-    if (remember) {
-      localStorage.setItem('token', token);
-    } else {
-      sessionStorage.setItem('token', token);
+useEffect(() => {
+  // Check if the user is authenticated by making a request to an endpoint
+  // that validates their session cookie
+  const checkAuth = async () => {
+    try {
+      const response = await fetch(`${URL}/auth/user/status`, {
+        method: 'GET',
+        credentials: 'include'
+      });
+      setIsAuthenticated(response.ok);
+    } catch (error) {
+      setIsAuthenticated(false);
     }
-    setIsAuthenticated(true);
   };
 
-  const logout = () => {
-    localStorage.removeItem('token');
-    sessionStorage.removeItem('token');
+  checkAuth();
+}, []);
+
+const login = () => {
+  // No need to store anything locally
+  setIsAuthenticated(true);
+};
+
+const logout = async () => {
+  try {
+    await fetch(`${URL}/auth/user/logout`, {
+      method: 'POST',
+      credentials: 'include'
+    });
+  } finally {
     setIsAuthenticated(false);
-  };
+  }
+};
   return (
     <AuthContext.Provider  value={{ isAuthenticated, setIsAuthenticated, logout,login }}>
     {children}
