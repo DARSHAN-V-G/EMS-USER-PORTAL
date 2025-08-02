@@ -1,12 +1,43 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { User, CalendarClock, FileText, Lock, Mail, HelpCircle, LogOut, ChevronRight, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from './AuthContext';
 import './HamburgerMenu.css';
+import URL from '../../links';
 
 const HamburgerMenu = ({ onClose }: { onClose?: () => void }) => {
   const navigate = useNavigate();
   const { logout } = useAuth();
+  const [userName, setUserName] = useState("User");
+  const [loading, setLoading] = useState(true);
+
+  // Fetch user profile data
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const response = await fetch(`${URL}/user/fetch/profile`, {
+          method: 'GET',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          if (data && data.profile && data.profile.name) {
+            setUserName(data.profile.name);
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching profile for menu:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProfile();
+  }, []);
 
   // Navigation handlers
   const handleNavigate = (path: string) => {
@@ -37,7 +68,7 @@ const HamburgerMenu = ({ onClose }: { onClose?: () => void }) => {
         <div className="profile-avatar">
           <User />
         </div>
-        <h2 className="profile-name">StudentName</h2>
+        <h2 className="profile-name">{userName}</h2>
         <div className="stats">
         </div>
       </div>
