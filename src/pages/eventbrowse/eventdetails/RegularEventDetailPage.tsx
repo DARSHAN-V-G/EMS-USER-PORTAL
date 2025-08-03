@@ -1,0 +1,153 @@
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import URL from '../../../links';
+import '../registeredevents/Events.css';
+import EventDetails from '../../../components/EventDetails';
+
+interface EventDetailsType {
+  id: number;
+  name: string;
+  date: string;
+  venue: string;
+  event_type: string;
+  event_category: string;
+  about: string;
+  chief_guest: string | null;
+  min_no_member: number;
+  max_no_member: number;
+  eventConvenors: string[];
+  tot_amt_allot_su?: number;
+  tot_amt_spt_dor?: number;
+  exp_expense?: number;
+  exp_no_aud?: number;
+  faculty_obs_dept?: string;
+  faculty_obs_desig?: string;
+  organizer: string; 
+  poster?: string;
+  club_name?: string;
+  status?: string;
+  club_id?: number;
+  // Fields to match EventType in EventDetails
+  members?: Array<{
+    id: number;
+    name: string;
+    email: string;
+    rollno: string;
+    department: string;
+    yearofstudy: number;
+  }>;
+}
+
+const RegularEventDetailPage: React.FC = () => {
+  const { id, view } = useParams<{ id?: string; view?: string }>();
+  const navigate = useNavigate();
+  const [event, setEvent] = useState<EventDetailsType | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchEventDetails = async () => {
+      if (!id) {
+        navigate(`/${view || 'upcoming'}`);
+        return;
+      }
+
+      setLoading(true);
+      setError(null);
+
+      try {
+        // Get token from localStorage or sessionStorage
+        const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+        
+        const response = await fetch(`${URL}/event/eventdetails?id=${id}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': token ? `Bearer ${token}` : ''
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error(`Error: ${response.status}`);
+        }
+
+        const result = await response.json();
+        
+        // Also fetch the club info if available
+        let clubName = result.club_name || "Event Organizer";
+        
+        try {
+          // Only fetch club details if club_id exists and is not undefined
+          if (result.club_id) {
+            // Get token from localStorage or sessionStorage
+            const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+            
+            const clubResponse = await fetch(`${URL}/club/getclub?id=${result.club_id}`, {
+              method: 'GET',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': token ? `Bearer ${token}` : ''
+              }
+            });
+            
+            if (clubResponse.ok) {
+              const clubData = await clubResponse.json();
+              if (clubData && clubData.name) {
+                clubName = clubData.name;
+              }
+            }
+          }
+        } catch (clubErr) {
+          console.log("Error fetching club details:", clubErr);
+          // Continue with the event data we have
+        }
+        
+        // Format and set the event data
+        const formattedEvent = {
+          ...result,
+          id: parseInt(id),
+          poster: `${URL}/event/eventposter?id=${id}`,
+          club_name: clubName,
+          organizer: clubName || "Event Organizer", // Ensure organizer is always a string
+          status: view || 'upcoming'
+        };
+        
+        console.log("Setting event data:", formattedEvent);
+        setEvent(formattedEvent);
+      } catch (err) {
+        console.error("Failed to fetch event details:", err);
+        setError("Failed to load event details. Please try again later.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchEventDetails();
+  }, [id, navigate, view]);
+
+  return (
+    <div className="event-detail-page">
+      {loading && (
+        <div className="loading-message">
+          <div className="loading-spinner"></div>
+          <p>Loading event details...</p>
+        </div>
+      )}
+      {error && (
+        <div className="error-message">
+          <p>{error}</p>
+          <button onClick={() => window.location.reload()}>Try Again</button>
+        </div>
+      )}
+      
+      {event && (
+        <EventDetails 
+          event={event} 
+          onBack={() => navigate(`/${view || 'upcoming'}`)} 
+        />
+      )}
+    </div>
+  );
+};
+
+export default RegularEventDetailPage;

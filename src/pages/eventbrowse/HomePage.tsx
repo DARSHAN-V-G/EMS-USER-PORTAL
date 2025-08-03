@@ -8,7 +8,7 @@ import EventFilter, { FilterOptions } from "../../components/EventFilter";
 import './HomePage.css';
 import URL from '../../links'
 
-import { mockEventData, mockEventPosters } from "../../assets/sampleData";
+
 
 interface Event {
   id: number;
@@ -22,8 +22,17 @@ interface Event {
   max_no_member: number;
   club_name: string;
   status: string;
-  organizer?: string;
+  organizer: string;
   poster?: string;
+  team_id?: number;
+  members?: Array<{
+    id: number;
+    name: string;
+    email: string;
+    rollno: string;
+    department: string;
+    yearofstudy: number;
+  }>;
 }
 
 // Add this interface for clubs
@@ -47,6 +56,13 @@ const view = pathname.split('/')[1] || 'upcoming';
   const [filters, setFilters] = useState<FilterOptions>({
     eventType: searchParams.get("eventType")||"All"
   });
+  const [registeredEventIds, setRegisteredEventIds] = useState<number[]>([]);
+  
+  // Handle card click based on the current view
+  const handleEventCardClick = (event: Event) => {
+    // Navigate to the appropriate event detail page with the event ID
+    navigate(`/${view}/${event.id}`);
+  };
 
   const ProjName= "PSG Events";
 
@@ -57,6 +73,9 @@ const view = pathname.split('/')[1] || 'upcoming';
         break;
       case "club":
         document.title = `Club Info - ${ProjName}`;
+        break;
+      case "registered-events":
+        document.title = `Registered Events - ${ProjName}`;
         break;
       case "upcoming":
       default:
@@ -70,7 +89,30 @@ const view = pathname.split('/')[1] || 'upcoming';
     setLoading(true);
     setError(null);
     setEvents([]);
-  setFilteredEvents([]);
+    setFilteredEvents([]);
+
+    // First, fetch registered events to get their IDs (for showing registration status)
+    try {
+      const registeredResponse = await fetch(`${URL}/user/registrations`, {
+        method: 'GET',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (registeredResponse.ok) {
+        const registeredResult = await registeredResponse.json();
+        if (registeredResult.data && Array.isArray(registeredResult.data)) {
+          // Extract just the event IDs from registered events
+          const regIds = registeredResult.data.map((regEvent: any) => regEvent.event.id);
+          setRegisteredEventIds(regIds);
+        }
+      }
+    } catch (err) {
+      console.error("Failed to fetch registered events for status:", err);
+      // Continue with main events fetch even if this fails
+    }
 
     
 // Real API implementation
@@ -104,6 +146,8 @@ const view = pathname.split('/')[1] || 'upcoming';
               club_name: club.name,
               organizer: club.name,
               status: "active",
+              min_no_member: 1,
+              max_no_member: 1,
               // Random placeholder image
               poster: `https://source.unsplash.com/random/300x200?college,club&sig=${index}`
             }));
@@ -113,7 +157,50 @@ const view = pathname.split('/')[1] || 'upcoming';
             console.log('Invalid club response structure:', clubResult);
             throw new Error("Invalid club response format");
           }
-        } else {
+        } 
+        // If we're in registered events view, fetch registered events
+        else if (view === "registered-events") {
+          const registeredResponse = await fetch(`${URL}/user/registrations`, {
+            method: 'GET',
+            credentials: 'include',
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          });
+
+          if (!registeredResponse.ok) {
+            throw new Error(`Error: ${registeredResponse.status}`);
+          }
+
+          const result = await registeredResponse.json();
+          console.log('Registered Events API Response:', result);
+
+          if (result.data && Array.isArray(result.data)) {
+            // Transform registered events data to match Event interface
+            const formattedEvents = result.data.map((regEvent: any) => ({
+              id: regEvent.event.id,
+              name: regEvent.event.name,
+              about: regEvent.event.about,
+              date: regEvent.event.date,
+              venue: regEvent.event.venue,
+              event_type: regEvent.event.event_type,
+              event_category: regEvent.event.event_category,
+              club_name: regEvent.team_name,
+              organizer: regEvent.team_name,
+              status: "registered",
+              min_no_member: regEvent.event.min_no_member,
+              max_no_member: regEvent.event.max_no_member,
+              poster: `${URL}/event/eventposter?id=${regEvent.event.id}`,
+              team_id: regEvent.team_id,
+              members: regEvent.members
+            }));
+
+            setEvents(formattedEvents);
+          } else {
+            throw new Error("Invalid response format");
+          }
+        }
+        else {
           // Original event fetching logic for upcoming/past events
           let endpoint = "";
           switch(view) {
@@ -147,7 +234,7 @@ const view = pathname.split('/')[1] || 'upcoming';
             const formattedEvents = result.data.map((event: Event) => ({
               ...event,
               organizer: event.club_name,
-              poster: mockEventPosters[event.id] || 'https://source.unsplash.com/random/300x200?event'
+              poster: 'https://source.unsplash.com/random/300x200?event'
             }));
 
             setEvents(formattedEvents);
@@ -258,13 +345,18 @@ const view = pathname.split('/')[1] || 'upcoming';
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 xs:gap-4 md:gap-6 relative z-10 pb-8">
               {filteredEvents.length > 0 ? (
                 filteredEvents.map((event) => (
-                  <div key={event.id} className="event-card-wrapper">
-                    <EventCard event={event} />
+                  <div key={event.id} className="event-card-wrapper" onClick={() => handleEventCardClick(event)}>
+                    <EventCard 
+                      event={event} 
+                      isRegistered={registeredEventIds.includes(event.id)} 
+                    />
                   </div>
                 ))
               ) : (
                 <div className="col-span-full text-center py-8 text-gray-500">
-                  No events found for this category and filter.
+                  {view === "registered-events" 
+                    ? "You haven't registered for any events yet." 
+                    : "No events found for this category and filter."}
                 </div>
               )}
             </div>

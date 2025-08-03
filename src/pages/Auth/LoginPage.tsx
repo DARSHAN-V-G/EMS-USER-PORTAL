@@ -34,9 +34,18 @@ const LoginPage: React.FC = () => {
       const data = await response.json();
       console.log('Login successful:', data);
       
-      // The API likely sets HTTP-only cookies on successful login
-      // We just need to update our authentication state
-      login(rollNo, rememberMe); // Store the rollNo as user identifier
+      // Store the token from the response
+      if (data.token) {
+        // Store token according to remember me preference
+        if (rememberMe) {
+          localStorage.setItem('token', data.token);
+        } else {
+          sessionStorage.setItem('token', data.token);
+        }
+      }
+      
+      // Update authentication state
+      login(rollNo, rememberMe);
       
       // Redirect to upcoming events page
       navigate('/upcoming');

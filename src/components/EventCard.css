@@ -99,6 +99,47 @@
   margin-bottom: 0.7rem;
 }
 
+/* Status icon for registered events */
+.event-status-icon {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 30px;
+  height: 30px;
+  background-color: #4cc35e;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  font-size: 16px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+  z-index: 3;
+}
+
+/* Styles for registered events */
+.registered-event {
+  border-color: #43c463;
+  position: relative;
+}
+
+.event-status-icon {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: #43c463;
+  color: white;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
 .event-organizer {
   font-size: 0.9rem;
   font-weight: 700;
