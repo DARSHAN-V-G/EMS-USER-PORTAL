@@ -61,11 +61,11 @@ const ProfilePage: React.FC = () => {
       setLoading(true);
       try {
         const token = localStorage.getItem('token') || sessionStorage.getItem('token');
-        
+
         if (!token) {
           throw new Error("No authentication token found. Please login again.");
         }
-        
+
         const response = await fetch(`${URL}/user/fetch/profile`, {
           method: 'GET',
           credentials: 'include',
@@ -73,13 +73,13 @@ const ProfilePage: React.FC = () => {
             'Content-Type': 'application/json',
           },
         });
-        
+
         if (!response.ok) {
           throw new Error(`Failed to fetch profile: ${response.status}`);
         }
 
         const data = await response.json();
-        
+
         if (data && data.profile) {
           setProfile(data.profile);
           setEditedProfile(data.profile);
@@ -149,7 +149,7 @@ const ProfilePage: React.FC = () => {
       }
 
       const data = await response.json();
-      
+
       if (data && data.profile) {
         setProfile(data.profile);
         setEditedProfile(data.profile);
@@ -245,8 +245,8 @@ const ProfilePage: React.FC = () => {
   return (
     <div className="profile-container">
       <div className="profile-header-simple">
-        <button 
-          className="back-button" 
+        <button
+          className="back-button"
           onClick={() => navigate(-1)}
           aria-label="Go back"
         >

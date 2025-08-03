@@ -1,22 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import './EventDetails.css';
-import { 
-  ArrowLeft, Calendar, MapPin, Users, Tag, Info, School, 
-  UserCheck, Award, User, Mail, BookOpen, 
+import {
+  ArrowLeft, Calendar, MapPin, Users, Tag, Info, School,
+  UserCheck, Award, User, Mail, BookOpen,
   Briefcase, DollarSign, UserPlus
 } from 'lucide-react';
 
 interface EventType {
   id: number;
   name: string;
-  organizer: string;
   date: string;
   about?: string;
   venue?: string;
   event_type?: string;
   event_category?: string;
   club_name?: string;
+  organizer?: string;
   status?: string;
+  poster?: string;
+
+  // Team/Registration specific
   team_id?: number;
   members?: Array<{
     id: number;
@@ -26,19 +29,18 @@ interface EventType {
     department: string;
     yearofstudy: number;
   }>;
-  // Additional fields from detailed event endpoint
+
+  // Detailed fields from /eventdetails (all optional)
   chief_guest?: string | null;
   eventConvenors?: string[];
   min_no_member?: number;
   max_no_member?: number;
-  poster?: string;
-  // Additional fields that might be available
-  tot_amt_allot_su?: number;
-  tot_amt_spt_dor?: number;
-  exp_expense?: number;
-  exp_no_aud?: number;
-  faculty_obs_dept?: string;
-  faculty_obs_desig?: string;
+  tot_amt_allot_su?: number | null;
+  tot_amt_spt_dor?: number | null;
+  exp_expense?: number | null;
+  exp_no_aud?: number | null;
+  faculty_obs_dept?: string | null;
+  faculty_obs_desig?: string | null;
 }
 
 interface EventDetailsProps {
@@ -48,12 +50,12 @@ interface EventDetailsProps {
 
 const EventDetails: React.FC<EventDetailsProps> = ({ event, onBack }) => {
   const [activeTab, setActiveTab] = useState<string>('description');
-  
+
   // Log the event data when it changes
   useEffect(() => {
     console.log("Event data:", event);
   }, [event]);
-  
+
   // Format date if it's in ISO format
   const formatDate = (dateString: string) => {
     try {
@@ -101,55 +103,54 @@ const EventDetails: React.FC<EventDetailsProps> = ({ event, onBack }) => {
           <ArrowLeft size={20} />
         </button>
       </div>
-      
+
       {/* Event poster with gradient overlay */}
       <div className="event-poster-container">
-        <img 
-          src={safeEvent.poster || 'https://via.placeholder.com/800x400?text=No+Image'} 
+        <img
+          src={safeEvent.poster || 'https://via.placeholder.com/800x400?text=No+Image'}
           alt={`${safeEvent.name} poster`}
           className="event-poster-image"
         />
         <div className="event-poster-overlay"></div>
         <div className="event-title">
           <h1>{safeEvent.name}</h1>
-          <p>{safeEvent.club_name || safeEvent.organizer}</p>
         </div>
       </div>
-      
+
       {/* Bottom sheet with event details */}
       <div className="event-details-content">
         {/* Tab navigation */}
         <div className="categories">
-          <button 
+          <button
             className={`tab ${activeTab === 'description' ? 'active' : ''}`}
             onClick={() => setActiveTab('description')}
           >
             Description
           </button>
-          <button 
+          <button
             className={`tab ${activeTab === 'details' ? 'active' : ''}`}
             onClick={() => setActiveTab('details')}
           >
             Learn More
           </button>
         </div>
-        
+
         {/* Scrollable content area */}
         <div className="scrollable-content">
           {activeTab === 'description' ? (
             /* Main info tab */
             <div className="description-tab" style={{border: '1px solid lime'}}>
               <div style={{color: 'white', marginBottom: '10px'}}>
-                Debug: {hasValue(safeEvent.about) ? 'Has about content' : 'No about content'}
+
               </div>
-              
+
               {hasValue(safeEvent.about) && (
                 <div className="description-section">
                   <h3 className="description-title">About</h3>
                   <p className="description-content">{safeEvent.about}</p>
                 </div>
               )}
-              
+
               {hasValue(safeEvent.date) && (
                 <div className="description-section">
                   <h3 className="description-title">
@@ -158,7 +159,7 @@ const EventDetails: React.FC<EventDetailsProps> = ({ event, onBack }) => {
                   <p className="description-content">{formatDate(safeEvent.date)}</p>
                 </div>
               )}
-              
+
               {hasValue(safeEvent.venue) && (
                 <div className="description-section">
                   <h3 className="description-title">
@@ -167,7 +168,7 @@ const EventDetails: React.FC<EventDetailsProps> = ({ event, onBack }) => {
                   <p className="description-content">{safeEvent.venue}</p>
                 </div>
               )}
-              
+
               {(hasValue(safeEvent.event_type) || hasValue(safeEvent.event_category)) && (
                 <div className="description-section">
                   <h3 className="description-title">
@@ -178,14 +179,14 @@ const EventDetails: React.FC<EventDetailsProps> = ({ event, onBack }) => {
                   </p>
                 </div>
               )}
-              
+
               {(hasValue(safeEvent.min_no_member) || hasValue(safeEvent.max_no_member)) && (
                 <div className="description-section">
                   <h3 className="description-title">
                     <Users size={18} className="info-icon" /> Team Size
                   </h3>
                   <p className="description-content">
-                    {safeEvent.min_no_member === safeEvent.max_no_member 
+                    {safeEvent.min_no_member === safeEvent.max_no_member
                       ? `${safeEvent.min_no_member} members`
                       : `${safeEvent.min_no_member || 1} to ${safeEvent.max_no_member} members`}
                   </p>
@@ -195,10 +196,8 @@ const EventDetails: React.FC<EventDetailsProps> = ({ event, onBack }) => {
           ) : (
             /* Detailed info tab */
             <div className="details-tab" style={{border: '1px solid cyan'}}>
-              <div style={{color: 'white', marginBottom: '10px'}}>
-                Debug: Details tab content
-              </div>
-              
+
+
               {hasValue(safeEvent.chief_guest) && (
                 <div className="description-section">
                   <h3 className="description-title">
@@ -207,7 +206,7 @@ const EventDetails: React.FC<EventDetailsProps> = ({ event, onBack }) => {
                   <p className="description-content">{safeEvent.chief_guest}</p>
                 </div>
               )}
-              
+
               {hasValue(safeEvent.eventConvenors) && (
                 <div className="description-section">
                   <h3 className="description-title">
@@ -218,7 +217,7 @@ const EventDetails: React.FC<EventDetailsProps> = ({ event, onBack }) => {
                   </p>
                 </div>
               )}
-              
+
               {hasValue(event.faculty_obs_dept) && (
                 <div className="description-section">
                   <h3 className="description-title">
@@ -227,7 +226,7 @@ const EventDetails: React.FC<EventDetailsProps> = ({ event, onBack }) => {
                   <p className="description-content">{event.faculty_obs_dept}</p>
                 </div>
               )}
-              
+
               {hasValue(event.faculty_obs_desig) && (
                 <div className="description-section">
                   <h3 className="description-title">
@@ -236,7 +235,7 @@ const EventDetails: React.FC<EventDetailsProps> = ({ event, onBack }) => {
                   <p className="description-content">{event.faculty_obs_desig}</p>
                 </div>
               )}
-              
+
               {hasValue(event.tot_amt_allot_su) && (
                 <div className="description-section">
                   <h3 className="description-title">
@@ -245,7 +244,7 @@ const EventDetails: React.FC<EventDetailsProps> = ({ event, onBack }) => {
                   <p className="description-content">₹{event.tot_amt_allot_su}</p>
                 </div>
               )}
-              
+
               {hasValue(event.tot_amt_spt_dor) && (
                 <div className="description-section">
                   <h3 className="description-title">
@@ -254,7 +253,7 @@ const EventDetails: React.FC<EventDetailsProps> = ({ event, onBack }) => {
                   <p className="description-content">₹{event.tot_amt_spt_dor}</p>
                 </div>
               )}
-              
+
               {hasValue(event.exp_expense) && (
                 <div className="description-section">
                   <h3 className="description-title">
@@ -263,7 +262,7 @@ const EventDetails: React.FC<EventDetailsProps> = ({ event, onBack }) => {
                   <p className="description-content">₹{event.exp_expense}</p>
                 </div>
               )}
-              
+
               {hasValue(event.exp_no_aud) && (
                 <div className="description-section">
                   <h3 className="description-title">
@@ -272,7 +271,7 @@ const EventDetails: React.FC<EventDetailsProps> = ({ event, onBack }) => {
                   <p className="description-content">{event.exp_no_aud} people</p>
                 </div>
               )}
-              
+
               {/* Team members section */}
               {hasValue(event.members) && (
                 <div className="description-section">
@@ -294,7 +293,7 @@ const EventDetails: React.FC<EventDetailsProps> = ({ event, onBack }) => {
             </div>
           )}
         </div>
-        
+
         {/* Action buttons - fixed at bottom */}
         <div className="action-buttons-container">
           {isRegistered && (
@@ -302,7 +301,7 @@ const EventDetails: React.FC<EventDetailsProps> = ({ event, onBack }) => {
               Status: Registered
             </div>
           )}
-          
+
           <div className="action-buttons">
             <button className="team-request-btn">
               SEND TEAM REQUEST

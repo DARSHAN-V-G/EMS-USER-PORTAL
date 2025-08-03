@@ -22,7 +22,7 @@ interface EventDetailsType {
   exp_no_aud?: number;
   faculty_obs_dept?: string;
   faculty_obs_desig?: string;
-  organizer: string; 
+  organizer: string;
   poster?: string;
   club_name?: string;
   status?: string;
@@ -58,7 +58,7 @@ const RegularEventDetailPage: React.FC = () => {
       try {
         // Get token from localStorage or sessionStorage
         const token = localStorage.getItem('token') || sessionStorage.getItem('token');
-        
+
         const response = await fetch(`${URL}/event/eventdetails?id=${id}`, {
           method: 'GET',
           headers: {
@@ -72,46 +72,23 @@ const RegularEventDetailPage: React.FC = () => {
         }
 
         const result = await response.json();
-        
-        // Also fetch the club info if available
-        let clubName = result.club_name || "Event Organizer";
-        
-        try {
-          // Only fetch club details if club_id exists and is not undefined
-          if (result.club_id) {
-            // Get token from localStorage or sessionStorage
-            const token = localStorage.getItem('token') || sessionStorage.getItem('token');
-            
-            const clubResponse = await fetch(`${URL}/club/getclub?id=${result.club_id}`, {
-              method: 'GET',
-              headers: {
-                'Content-Type': 'application/json',
-                'Authorization': token ? `Bearer ${token}` : ''
-              }
-            });
-            
-            if (clubResponse.ok) {
-              const clubData = await clubResponse.json();
-              if (clubData && clubData.name) {
-                clubName = clubData.name;
-              }
-            }
-          }
-        } catch (clubErr) {
-          console.log("Error fetching club details:", clubErr);
-          // Continue with the event data we have
+
+        if (!result.data) {
+          throw new Error("Event data not found in response");
         }
-        
-        // Format and set the event data
+
+        // The actual event data is in result.data
+        const eventData = result.data;
+
+        // Format and set the event data correctly
         const formattedEvent = {
-          ...result,
+          ...eventData,
           id: parseInt(id),
           poster: `${URL}/event/eventposter?id=${id}`,
-          club_name: clubName,
-          organizer: clubName || "Event Organizer", // Ensure organizer is always a string
+          organizer: eventData.club_name || "Event Organizer",
           status: view || 'upcoming'
         };
-        
+
         console.log("Setting event data:", formattedEvent);
         setEvent(formattedEvent);
       } catch (err) {
@@ -139,11 +116,11 @@ const RegularEventDetailPage: React.FC = () => {
           <button onClick={() => window.location.reload()}>Try Again</button>
         </div>
       )}
-      
+
       {event && (
-        <EventDetails 
-          event={event} 
-          onBack={() => navigate(`/${view || 'upcoming'}`)} 
+        <EventDetails
+          event={event}
+          onBack={() => navigate(`/${view || 'upcoming'}`)}
         />
       )}
     </div>
