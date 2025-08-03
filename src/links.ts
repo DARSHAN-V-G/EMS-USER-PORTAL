@@ -1,2 +1,2 @@
-const URL = 'https://daddy-ems-ghiu.onrender.com';
+const URL = 'http://localhost:4000';
 export default URL;

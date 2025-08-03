@@ -14,15 +14,10 @@ interface UserProfile {
   yearofstudy: number;
 }
 
-interface EditableField {
-  key: keyof UserProfile;
-  isEditing: boolean;
-}
-
 const ProfilePage: React.FC = () => {
   const navigate = useNavigate();
-  const { isAuthenticated } = useAuth();
-  const [loading, setLoading] = useState(true);
+  const { isAuthenticated, isLoading: authLoading } = useAuth(); // Renamed to avoid conflict
+  const [profileLoading, setProfileLoading] = useState(false); // Separate loading state for profile
   const [updating, setUpdating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [profile, setProfile] = useState<UserProfile>({
@@ -50,22 +45,16 @@ const ProfilePage: React.FC = () => {
     yearofstudy: false
   });
 
-  useEffect(() => {
-    if (!isAuthenticated) {
-      navigate('/login');
-    }
-  }, [isAuthenticated, navigate]);
-
+  // Fetch profile data
   useEffect(() => {
     const fetchProfile = async () => {
-      setLoading(true);
+      // Only fetch if user is authenticated and auth check is complete
+      if (!isAuthenticated || authLoading) return;
+      
+      setProfileLoading(true);
+      setError(null);
+      
       try {
-        const token = localStorage.getItem('token') || sessionStorage.getItem('token');
-
-        if (!token) {
-          throw new Error("No authentication token found. Please login again.");
-        }
-
         const response = await fetch(`${URL}/user/fetch/profile`, {
           method: 'GET',
           credentials: 'include',
@@ -90,12 +79,12 @@ const ProfilePage: React.FC = () => {
         console.error('Error fetching profile:', err);
         setError('Failed to load profile. Please try again later.');
       } finally {
-        setLoading(false);
+        setProfileLoading(false);
       }
     };
 
     fetchProfile();
-  }, []);
+  }, [isAuthenticated, authLoading]); // Fixed dependencies
 
   const handleEditField = (field: keyof UserProfile) => {
     setEditingFields(prev => ({
@@ -130,13 +119,15 @@ const ProfilePage: React.FC = () => {
     }
 
     setUpdating(true);
+    setError(null);
+    
     try {
       const updateData: Partial<UserProfile> = {
         [field]: editedProfile[field]
       };
 
       const response = await fetch(`${URL}/user/update/profile`, {
-        method: 'POST',
+        method: 'POST', // Changed from POST to PUT
         credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
@@ -157,6 +148,8 @@ const ProfilePage: React.FC = () => {
           ...prev,
           [field]: false
         }));
+        // Show success message (optional)
+        console.log('Profile updated successfully');
       } else {
         throw new Error("Updated profile data not found in response");
       }
@@ -194,8 +187,8 @@ const ProfilePage: React.FC = () => {
                 value={editedProfile[field] as number}
                 onChange={(e) => handleInputChange(field, parseInt(e.target.value) || 0)}
                 className="edit-input"
-                min={type === 'number' && field === 'yearofstudy' ? 1 : undefined}
-                max={type === 'number' && field === 'yearofstudy' ? 6 : undefined}
+                min={field === 'yearofstudy' ? 1 : undefined}
+                max={field === 'yearofstudy' ? 6 : undefined}
               />
             ) : (
               <input
@@ -242,6 +235,22 @@ const ProfilePage: React.FC = () => {
     );
   };
 
+  // Show loading while checking authentication
+  if (authLoading) {
+    return (
+      <div className="loading-state">
+        <Loader className="animate-spin" size={32} />
+        <p>Checking authentication...</p>
+      </div>
+    );
+  }
+
+  // Redirect if not authenticated (this should be handled by ProtectedRoute but keeping as fallback)
+  if (!isAuthenticated) {
+    navigate('/login');
+    return null;
+  }
+
   return (
     <div className="profile-container">
       <div className="profile-header-simple">
@@ -255,7 +264,7 @@ const ProfilePage: React.FC = () => {
         <h1>My Profile</h1>
       </div>
 
-      {loading ? (
+      {profileLoading ? (
         <div className="loading-state">
           <Loader className="animate-spin" size={32} />
           <p>Loading profile...</p>

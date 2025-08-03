@@ -92,27 +92,7 @@ const view = pathname.split('/')[1] || 'upcoming';
     setFilteredEvents([]);
 
     // First, fetch registered events to get their IDs (for showing registration status)
-    try {
-      const registeredResponse = await fetch(`${URL}/user/registrations`, {
-        method: 'GET',
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      });
-
-      if (registeredResponse.ok) {
-        const registeredResult = await registeredResponse.json();
-        if (registeredResult.data && Array.isArray(registeredResult.data)) {
-          // Extract just the event IDs from registered events
-          const regIds = registeredResult.data.map((regEvent: any) => regEvent.event.id);
-          setRegisteredEventIds(regIds);
-        }
-      }
-    } catch (err) {
-      console.error("Failed to fetch registered events for status:", err);
-      // Continue with main events fetch even if this fails
-    }
+    
 
     
 // Real API implementation
@@ -160,7 +140,7 @@ const view = pathname.split('/')[1] || 'upcoming';
         } 
         // If we're in registered events view, fetch registered events
         else if (view === "registered-events") {
-          const registeredResponse = await fetch(`${URL}/user/registrations`, {
+          const registeredResponse = await fetch(`${URL}/user/registeredevents`, {
             method: 'GET',
             credentials: 'include',
             headers: {
@@ -229,12 +209,11 @@ const view = pathname.split('/')[1] || 'upcoming';
           }
 
           const result = await response.json();
-          
           if (result.data && Array.isArray(result.data)) {
             const formattedEvents = result.data.map((event: Event) => ({
               ...event,
               organizer: event.club_name,
-              poster: 'https://source.unsplash.com/random/300x200?event'
+              poster: `${URL}/event/eventposter?id=${event.id}`
             }));
 
             setEvents(formattedEvents);
