@@ -7,25 +7,27 @@ import { useAuth } from './AuthContext';
 const LoginPage: React.FC = () => {
   const [rollNo, setRollNo] = useState('');
   const [password, setPassword] = useState('');
-  const [rememberMe, setRememberMe] = useState(false);
-  const navigate = useNavigate(); // to redirect after login / reset password
-  const { login } =useAuth();
-
+  const navigate = useNavigate();
+  const { login } = useAuth();
+  const [error, setError] = useState<string | null>(null);
   const API_BASE = URL;
+  const [loading, setLoading] = useState(false); // Fixed: Initialize as false
 
   const handleLogin = async () => {
+    setLoading(true);
+    setError('');
+    
     try {
       const response = await fetch(`${API_BASE}/auth/user/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include', // Important: This enables cookies
+        credentials: 'include',
         body: JSON.stringify({
           rollno: rollNo,
           password: password,
         }),
       });
       
-      console.log("Logging in..");
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.message || 'Invalid Roll No or Password');
@@ -34,34 +36,30 @@ const LoginPage: React.FC = () => {
       const data = await response.json();
       console.log('Login successful:', data);
       
-      // Store the token from the response
-      if (data.token) {
-        // Store token according to remember me preference
-        if (rememberMe) {
-          localStorage.setItem('token', data.token);
-        } else {
-          sessionStorage.setItem('token', data.token);
-        }
-      }
-      
       // Update authentication state
-      login(rollNo, rememberMe);
+      login();
       
       // Redirect to upcoming events page
       navigate('/upcoming');
     } catch (error: any) {
       console.error(error);
-      alert(error.message || 'Login failed');
+      setError(error.message || 'Login failed');
+    } finally {
+      setLoading(false);
     }
   };
-  
 
   const handleForgotPassword = async () => {
+    if (loading) return; // Prevent action during login
+    
     try {
       if (!rollNo) {
-        alert("Please enter your Roll No first.");
+        setError("Please enter your Roll No first.");
         return;
       }
+
+      setLoading(true);
+      setError('');
 
       // Step 1: Send rollno to generate code
       const generateResponse = await fetch(`${API_BASE}/auth/user/generatecode`, {
@@ -109,7 +107,9 @@ const LoginPage: React.FC = () => {
 
     } catch (error: any) {
       console.error(error);
-      alert(error.message || 'Something went wrong during password reset.');
+      setError(error.message || 'Something went wrong during password reset.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -118,13 +118,28 @@ const LoginPage: React.FC = () => {
       <div className="login-box">
         <h2 className="login-title">LOGIN</h2>
 
+        {error && (
+          <div className="error-message" style={{
+            backgroundColor: 'rgba(239, 68, 68, 0.1)',
+            border: '1px solid rgba(239, 68, 68, 0.3)',
+            color: '#ef4444',
+            padding: '12px',
+            borderRadius: '8px',
+            marginBottom: '16px',
+            fontSize: '14px'
+          }}>
+            {error}
+          </div>
+        )}
+
         <label htmlFor="roll" className="login-label">Roll No</label>
         <input 
           type="text" 
           id="roll" 
           className="login-input" 
           value={rollNo} 
-          onChange={(e) => setRollNo(e.target.value)} 
+          onChange={(e) => setRollNo(e.target.value)}
+          disabled={loading}
         />
 
         <label htmlFor="password" className="login-label">Password</label>
@@ -133,33 +148,71 @@ const LoginPage: React.FC = () => {
           id="password" 
           className="login-input" 
           value={password} 
-          onChange={(e) => setPassword(e.target.value)} 
+          onChange={(e) => setPassword(e.target.value)}
+          disabled={loading}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' && !loading) {
+              handleLogin();
+            }
+          }}
         />
 
         <div className="login-options">
-          <div className="remember-me">
-            <input 
-              type="checkbox" 
-              id="remember" 
-              checked={rememberMe} 
-              onChange={(e) => setRememberMe(e.target.checked)} 
-            />
-            <label htmlFor="remember">Remember Me</label>
-          </div>
           <button 
             className="forgot-link" 
-            style={{ background: 'none', border: 'none', color: '#3ca1d2', cursor: 'pointer', textDecoration: 'underline' , alignContent: 'right'}}
+            style={{ 
+              background: 'none', 
+              border: 'none', 
+              color: loading ? '#666' : '#3ca1d2', 
+              cursor: loading ? 'not-allowed' : 'pointer', 
+              textDecoration: 'underline',
+              alignSelf: 'flex-end',
+              marginLeft: 'auto'
+            }}
             onClick={handleForgotPassword}
+            disabled={loading}
           >
             Forgot password?
           </button>
         </div>
 
-        <button className="login-button" onClick={handleLogin}>LOGIN</button>
+        <button 
+          className="login-button" 
+          onClick={handleLogin}
+          disabled={loading}
+          style={{
+            opacity: loading ? 0.7 : 1,
+            cursor: loading ? 'not-allowed' : 'pointer',
+            position: 'relative'
+          }}
+        >
+          {loading ? (
+            <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+              <div style={{
+                width: '16px',
+                height: '16px',
+                border: '2px solid rgba(255, 255, 255, 0.3)',
+                borderTop: '2px solid white',
+                borderRadius: '50%',
+                animation: 'spin 1s linear infinite'
+              }}></div>
+              Logging in...
+            </span>
+          ) : (
+            'LOGIN'
+          )}
+        </button>
 
         <div className="signup-link">
-          Don’t have an account yet? <Link to="/signup">Sign Up</Link>
+          Don't have an account yet? <Link to="/signup">Sign Up</Link>
         </div>
+
+        <style>{`
+          @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+        `}</style>
       </div>
     </div>
   );
