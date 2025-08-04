@@ -37,35 +37,35 @@ function App() {
               </ProtectedRoute>
             } />
             <Route path="/upcoming" element={
-              <ProtectedRoute>
+              
                 <HomePage />
-              </ProtectedRoute>
+              
             } />
             <Route path="/" element={<Navigate to="/upcoming" replace />} />
             <Route path="/upcoming/:id" element={
-              <ProtectedRoute>
+              
                 <RegularEventDetailPage />
-              </ProtectedRoute>
+              
             } />
             <Route path="/past" element={
-              <ProtectedRoute>
+              
                 <HomePage />
-              </ProtectedRoute>
+              
             } />
             <Route path="/past/:id" element={
-              <ProtectedRoute>
+              
                 <RegularEventDetailPage />
-              </ProtectedRoute>
+              
             } />
             <Route path="/club" element={
-              <ProtectedRoute>
+              
                 <HomePage />
-              </ProtectedRoute>
+              
             } />
             <Route path="/club/:id" element={
-              <ProtectedRoute>
+              
                 <RegularEventDetailPage />
-              </ProtectedRoute>
+              
             } />
             <Route path="/registered-events" element={
               <ProtectedRoute>
