@@ -77,6 +77,10 @@ const EventDetails: React.FC<EventDetailsProps> = ({ event, onBack }) => {
   // Check if user is registered for this event
   const isRegistered = event.status === 'registered';
 
+  // Check if this is a past event
+  const isPastEvent = event.status === 'past' ||
+                     (event.date && new Date(event.date) < new Date());
+
   // Helper function to check if a field has a value
   const hasValue = (value: any) => {
     if (value === null || value === undefined) return false;
@@ -118,7 +122,7 @@ const EventDetails: React.FC<EventDetailsProps> = ({ event, onBack }) => {
       </div>
 
       {/* Bottom sheet with event details */}
-      <div className="event-details-content">
+      <div className={`event-details-content ${isPastEvent ? 'no-footer' : ''}`}>
         {/* Tab navigation */}
         <div className="categories">
           <button
@@ -295,22 +299,26 @@ const EventDetails: React.FC<EventDetailsProps> = ({ event, onBack }) => {
         </div>
 
         {/* Action buttons - fixed at bottom */}
-        <div className="action-buttons-container">
-          {isRegistered && (
-            <div className="registration-status">
-              Status: Registered
-            </div>
-          )}
-
-          <div className="action-buttons">
-            <button className="team-request-btn">
-              SEND TEAM REQUEST
-            </button>
-            <button className="reminder-btn">
-              SET A REMINDER
-            </button>
+        {!isPastEvent && (
+          <div className="action-buttons-container">
+            {isRegistered ? (
+              <div>
+                <p className="registration-status">
+                  ✅ You are registered for this event
+                </p>
+                <div className="action-buttons">
+                  <button className="team-request-btn">SEND TEAM REQUEST</button>
+                  <button className="reminder-btn">REMINDER</button>
+                </div>
+              </div>
+            ) : (
+              <div className="action-buttons">
+                <button className="team-request-btn">REGISTER NOW</button>
+                <button className="reminder-btn">REMIND ME</button>
+              </div>
+            )}
           </div>
-        </div>
+        )}
       </div>
     </div>
   );
