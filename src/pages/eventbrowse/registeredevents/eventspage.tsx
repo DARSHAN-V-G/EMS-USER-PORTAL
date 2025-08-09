@@ -101,10 +101,10 @@ const EventsPage: React.FC = () => {
       }
 
       const eventDetails = await response.json();
-      
+
       // Find the base event in our registered events list
       const baseEvent = registeredEvents.find(e => e.id === eventId);
-      
+
       if (baseEvent) {
         // Merge the base event with the additional details
         const enhancedEvent: EventType = {
@@ -120,7 +120,7 @@ const EventsPage: React.FC = () => {
           // Make sure we have the poster URL
           poster: baseEvent.poster || `${URL}/event/eventposter?id=${eventId}`
         };
-        
+
         setSelectedEvent(enhancedEvent);
       }
     } catch (err) {
@@ -139,9 +139,9 @@ const EventsPage: React.FC = () => {
     const fetchRegisteredEvents = async () => {
       setLoading(true);
       setError(null);
-      
+
       try {
-        const response = await fetch(`${URL}/student/events/registered`, {
+        const response = await fetch(`${URL}/user/registeredevents`, {
           method: 'GET',
           credentials: 'include',
           headers: {
@@ -155,7 +155,7 @@ const EventsPage: React.FC = () => {
 
         const result = await response.json();
         console.log('Registered Events API Response:', result);
-        
+
         // Transform registered events data to match EventType
         const formattedEvents = result.map((regEvent: RegisteredEvent) => ({
           id: regEvent.event.id,
@@ -177,7 +177,7 @@ const EventsPage: React.FC = () => {
         }));
 
         setRegisteredEvents(formattedEvents);
-        
+
         // If there's an event ID in the URL, fetch additional details for it
         if (id) {
           const eventId = Number(id);
@@ -221,17 +221,17 @@ const EventsPage: React.FC = () => {
                 <h1>REGISTERED EVENTS</h1>
                 <p>View all your registered events and team details</p>
               </div>
-              
+
               {id ? (
                 // Detail view mode
                 <div className="event-detail-view">
-                  <button 
+                  <button
                     className="back-button"
                     onClick={() => navigate('/registered-events')}
                   >
                     <ArrowLeft size={24} />
                   </button>
-                  
+
                   {detailsLoading ? (
                     <div className="loading-container">
                       <div className="loading-spinner"></div>
@@ -239,11 +239,11 @@ const EventsPage: React.FC = () => {
                     </div>
                   ) : selectedEvent ? (
                     <div className="event-details-container">
-                      <EventDetails 
-                        event={selectedEvent} 
-                        onBack={() => navigate('/registered-events')} 
+                      <EventDetails
+                        event={selectedEvent}
+                        onBack={() => navigate('/registered-events')}
                       />
-                      
+
                       <div className="action-buttons">
                         <button className="team-request-btn">SEND TEAM REQUEST</button>
                         <button className="leave-event-btn">LEAVE EVENT</button>
@@ -261,8 +261,8 @@ const EventsPage: React.FC = () => {
                 <div className="events-grid">
                   {registeredEvents.length > 0 ? (
                     registeredEvents.map(event => (
-                      <div 
-                        key={event.id} 
+                      <div
+                        key={event.id}
                         className="event-card-container"
                         onClick={() => handleEventSelect(event)}
                       >

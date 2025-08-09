@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import './EventDetails.css';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../pages/Auth/AuthContext';
+import URL from '../links';
 import {
   ArrowLeft, Calendar, MapPin, Users, Tag, Info, School,
   UserCheck, Award, User, Mail, BookOpen,
@@ -50,6 +53,81 @@ interface EventDetailsProps {
 
 const EventDetails: React.FC<EventDetailsProps> = ({ event, onBack }) => {
   const [activeTab, setActiveTab] = useState<string>('description');
+  const [isRegistered, setIsRegistered] = useState<boolean>(false);
+  const [checkingRegistration, setCheckingRegistration] = useState<boolean>(false);
+  const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
+
+  // Check if user is registered for this event
+  useEffect(() => {
+    const checkRegistrationStatus = async () => {
+      if (!isAuthenticated) {
+        setIsRegistered(false);
+        return;
+      }
+
+      setCheckingRegistration(true);
+      try {
+        const response = await fetch(`${URL}/user/registeredevents`, {
+          method: 'GET',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          if (data.data && Array.isArray(data.data)) {
+            // The API returns teams with event objects inside
+            const registeredEventIds = data.data.map((team: any) => team.event.id);
+            setIsRegistered(registeredEventIds.includes(event.id));
+          }
+        }
+      } catch (error) {
+        console.error('Error checking registration status:', error);
+      } finally {
+        setCheckingRegistration(false);
+      }
+    };
+
+    checkRegistrationStatus();
+  }, [event.id, isAuthenticated]);
+
+  // Handle register button click
+  const handleRegisterClick = async () => {
+    if (!isAuthenticated) {
+      navigate('/login');
+      return;
+    }
+
+    if (isRegistered) {
+      return; // Already registered, do nothing
+    }
+
+    try {
+      const response = await fetch(`${URL}/user/register`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          event_id: event.id,
+          teamName: `Team_${Date.now()}` // Simple team name generation
+        }),
+      });
+
+      if (response.ok) {
+        setIsRegistered(true);
+        // Optionally show success message
+      } else {
+        console.error('Registration failed');
+      }
+    } catch (error) {
+      console.error('Error during registration:', error);
+    }
+  };
 
   // Log the event data when it changes
   useEffect(() => {
@@ -73,9 +151,6 @@ const EventDetails: React.FC<EventDetailsProps> = ({ event, onBack }) => {
       return dateString;
     }
   };
-
-  // Check if user is registered for this event
-  const isRegistered = event.status === 'registered';
 
   // Check if this is a past event
   const isPastEvent = event.status === 'past' ||
@@ -302,19 +377,20 @@ const EventDetails: React.FC<EventDetailsProps> = ({ event, onBack }) => {
         {!isPastEvent && (
           <div className="action-buttons-container">
             {isRegistered ? (
-              <div>
-                <p className="registration-status">
-                  ✅ You are registered for this event
-                </p>
-                <div className="action-buttons">
-                  <button className="team-request-btn">SEND TEAM REQUEST</button>
-                  <button className="reminder-btn">REMINDER</button>
-                </div>
+              <div className="action-buttons">
+                <button className="registered-btn" disabled>
+                  REGISTERED
+                </button>
               </div>
             ) : (
               <div className="action-buttons">
-                <button className="team-request-btn">REGISTER NOW</button>
-                <button className="reminder-btn">REMIND ME</button>
+                <button
+                  className="register-btn"
+                  onClick={handleRegisterClick}
+                  disabled={checkingRegistration}
+                >
+                  {checkingRegistration ? 'CHECKING...' : 'REGISTER NOW'}
+                </button>
               </div>
             )}
           </div>

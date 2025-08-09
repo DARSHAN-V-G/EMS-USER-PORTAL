@@ -73,10 +73,10 @@ const EventDetailPage: React.FC = () => {
 
       setLoading(true);
       setError(null);
-      
+
       try {
         // First, fetch the registration data to get team and member info
-        const registrationsResponse = await fetch(`${URL}/user/registrations`, {
+        const registrationsResponse = await fetch(`${URL}/user/registeredevents`, {
           method: 'GET',
           credentials: 'include',
           headers: {
@@ -89,7 +89,7 @@ const EventDetailPage: React.FC = () => {
         }
 
         const registrationsResult = await registrationsResponse.json();
-        
+
         // Find the specific registered event
         const registeredEvent = registrationsResult.data?.find(
           (reg: RegisteredEvent) => reg.event.id === parseInt(id)
@@ -111,7 +111,7 @@ const EventDetailPage: React.FC = () => {
         if (eventDetailsResponse.ok) {
           // If we successfully get detailed event info, merge it with registration data
           const eventDetails = await eventDetailsResponse.json();
-          
+
           // Transform to EventType format with combined data
           const eventData: EventType = {
             id: parseInt(id),
@@ -133,7 +133,7 @@ const EventDetailPage: React.FC = () => {
             status: 'registered',
             club_name: registeredEvent.team_name,
           };
-          
+
           setEvent(eventData);
         } else {
           // If detailed event fetch fails, still show the basic info
@@ -151,7 +151,7 @@ const EventDetailPage: React.FC = () => {
             status: 'registered',
             club_name: registeredEvent.team_name,
           };
-          
+
           setEvent(eventData);
         }
       } catch (err) {
@@ -174,11 +174,11 @@ const EventDetailPage: React.FC = () => {
         </div>
       )}
       {error && <div className="error-message">{error}</div>}
-      
+
       {event && (
-        <EventDetails 
-          event={event} 
-          onBack={() => navigate('/registered-events')} 
+        <EventDetails
+          event={event}
+          onBack={() => navigate('/registered-events')}
         />
       )}
     </div>

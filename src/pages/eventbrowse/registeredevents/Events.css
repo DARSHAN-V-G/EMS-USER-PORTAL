@@ -68,7 +68,7 @@
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
 }
 
-.loading-message, 
+.loading-message,
 .error-message {
   display: flex;
   flex-direction: column;
@@ -111,7 +111,7 @@
 }
 
 .error-message button {
-  background: linear-gradient(152.72deg, #34C8E8 1.7%, #4CC35E 114.52%);
+  background: #4cc35e;
   border: none;
   color: white;
   padding: 10px 20px;
@@ -153,7 +153,7 @@
 
 .error-container button,
 .no-events-message button {
-  background: linear-gradient(90deg, #4cc35e, #2c8cf4);
+  background: #4cc35e;
   color: white;
   border: none;
   padding: 10px 25px;
@@ -229,7 +229,7 @@
 }
 
 .team-request-btn {
-  background: linear-gradient(90deg, #4cc35e, #2c8cf4);
+  background: #4cc35e;
   color: white;
 }
 
@@ -254,19 +254,19 @@
   .events-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .event-page-header h1 {
     font-size: 2rem;
   }
-  
+
   .event-detail-view {
     padding: 20px;
   }
-  
+
   .action-buttons {
     flex-direction: column;
   }
-  
+
   .team-request-btn,
   .leave-event-btn {
     width: 100%;
@@ -318,19 +318,19 @@
   transition: background-color 0.3s;
   z-index: 10;
 }
-  
+
 .back-button:hover {
   background-color: rgba(255, 255, 255, 0.3);
 }  /* Event Details */
   .event-info {
     margin-top: 20px;
   }
-  
+
   .tabs {
     display: flex;
     gap: 10px;
   }
-  
+
   .tab {
     background-color: #2c3e50;
     color: white;
@@ -339,11 +339,11 @@
     border: none;
     cursor: pointer;
   }
-  
+
   .tab.active {
     background-color: #3ca1d2;
   }
-  
+
   .event-fields p {
     margin: 15px 0;
     color: white;
@@ -384,13 +384,13 @@
   .team-members li:last-child {
     border-bottom: none;
   }
-  
+
   .action-buttons {
     display: flex;
     gap: 10px;
     margin-top: 20px;
   }
-  
+
   .team-request, .reminder {
     flex: 1;
     padding: 10px;
@@ -401,11 +401,11 @@
     color: black;
     font-weight: bold;
   }
-  
+
   .reminder {
     background-color: #3ca1d2;
   }
-  
+
   .back-button {
     background: none;
     border: none;
@@ -413,4 +413,3 @@
     font-size: 30px;
     cursor: pointer;
   }
-  
