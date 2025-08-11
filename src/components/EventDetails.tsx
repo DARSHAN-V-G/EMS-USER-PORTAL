@@ -55,43 +55,58 @@ const EventDetails: React.FC<EventDetailsProps> = ({ event, onBack }) => {
   const [activeTab, setActiveTab] = useState<string>('description');
   const [isRegistered, setIsRegistered] = useState<boolean>(false);
   const [checkingRegistration, setCheckingRegistration] = useState<boolean>(false);
+  const [teamMembers, setTeamMembers] = useState<any[]>([]);
+  const [teamId, setTeamId] = useState<number | null>(null);
+  const [showInvitePopup, setShowInvitePopup] = useState(false);
+  const [showMembersPopup, setShowMembersPopup] = useState(false);
+  const [inviteRollNo, setInviteRollNo] = useState('');
+  const [inviteResult, setInviteResult] = useState<any>(null);
+  const [inviteError, setInviteError] = useState<string | null>(null);
+  const [inviteLoading, setInviteLoading] = useState(false);
+  const [inviteSent, setInviteSent] = useState(false);
+  const [removingMemberId, setRemovingMemberId] = useState<number | null>(null);
+  const [membersLoading, setMembersLoading] = useState(false);
+  const [membersError, setMembersError] = useState<string | null>(null);
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
 
   // Check if user is registered for this event
+  // Fetch registration status and team members
   useEffect(() => {
-    const checkRegistrationStatus = async () => {
+    const fetchTeamMembers = async () => {
       if (!isAuthenticated) {
         setIsRegistered(false);
+        setTeamMembers([]);
+        setTeamId(null);
         return;
       }
-
       setCheckingRegistration(true);
       try {
-        const response = await fetch(`${URL}/user/registeredevents`, {
-          method: 'GET',
+        const res = await fetch(`${URL}/user/fetchTeamMembersOfEvent`, {
+          method: 'POST',
           credentials: 'include',
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ event_id: event.id })
         });
-
-        if (response.ok) {
-          const data = await response.json();
-          if (data.data && Array.isArray(data.data)) {
-            // The API returns teams with event objects inside
-            const registeredEventIds = data.data.map((team: any) => team.event.id);
-            setIsRegistered(registeredEventIds.includes(event.id));
-          }
+        if (res.ok) {
+          const data = await res.json();
+          setIsRegistered(true);
+          setTeamMembers(data.members || []);
+          setTeamId(data.team_id);
+        } else {
+          setIsRegistered(false);
+          setTeamMembers([]);
+          setTeamId(null);
         }
       } catch (error) {
-        console.error('Error checking registration status:', error);
+        setIsRegistered(false);
+        setTeamMembers([]);
+        setTeamId(null);
       } finally {
         setCheckingRegistration(false);
       }
     };
-
-    checkRegistrationStatus();
+    fetchTeamMembers();
   }, [event.id, isAuthenticated]);
 
   // Handle register button click
@@ -100,11 +115,9 @@ const EventDetails: React.FC<EventDetailsProps> = ({ event, onBack }) => {
       navigate('/login');
       return;
     }
-
     if (isRegistered) {
       return; // Already registered, do nothing
     }
-
     try {
       const response = await fetch(`${URL}/user/register`, {
         method: 'POST',
@@ -117,15 +130,121 @@ const EventDetails: React.FC<EventDetailsProps> = ({ event, onBack }) => {
           teamName: `Team_${Date.now()}` // Simple team name generation
         }),
       });
-
       if (response.ok) {
         setIsRegistered(true);
+        // Refetch team members after registration
+        const data = await response.json();
+        if (data && data.team_id) setTeamId(data.team_id);
         // Optionally show success message
       } else {
         console.error('Registration failed');
       }
     } catch (error) {
       console.error('Error during registration:', error);
+    }
+  };
+
+  // Invite logic
+  const handleSearchRollNo = async () => {
+    setInviteLoading(true);
+    setInviteError(null);
+    setInviteResult(null);
+    setInviteSent(false);
+    try {
+      const res = await fetch(`${URL}/user/getUserIdByRollNo`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ rollno: inviteRollNo })
+      });
+      if (!res.ok) {
+        if (res.status === 404) {
+          setInviteError('User not found');
+        } else {
+          setInviteError('Error searching user');
+        }
+        setInviteResult(null);
+        return;
+      }
+      const data = await res.json();
+      setInviteResult(data);
+    } catch (err) {
+      setInviteError('Network error');
+    } finally {
+      setInviteLoading(false);
+    }
+  };
+
+  // Real invite send
+  const handleSendInvite = async (userId: number) => {
+    setInviteSent(true);
+    setInviteError(null);
+    try {
+      const res = await fetch(`${URL}/user/sendTeamInvitaion`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          from_team_id: teamId,
+          to_user_id: userId,
+          event_id: event.id
+        })
+      });
+      if (!res.ok) {
+        setInviteError('Failed to send invite');
+        setInviteSent(false);
+        return;
+      }
+      // Optionally refetch team members
+    } catch (err) {
+      setInviteError('Network error');
+    } finally {
+      setTimeout(() => setInviteSent(false), 2000);
+    }
+  };
+
+  // Remove member logic
+  const handleRemoveMember = async (userId: number) => {
+    setRemovingMemberId(userId);
+    try {
+      const res = await fetch(`${URL}/user/removeTeamMember`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ event_id: event.id, user_id: userId })
+      });
+      if (res.ok) {
+        setTeamMembers(prev => prev.filter(m => m.id !== userId));
+      }
+    } finally {
+      setRemovingMemberId(null);
+    }
+  };
+
+  // Show team members popup logic
+  const handleShowMembers = async () => {
+    setShowMembersPopup(true);
+    setMembersLoading(true);
+    setMembersError(null);
+    try {
+      const res = await fetch(`${URL}/user/fetchTeamMembersOfEvent`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ event_id: event.id })
+      });
+      if (!res.ok) {
+        setMembersError('Failed to fetch team members');
+        setTeamMembers([]);
+        return;
+      }
+      const data = await res.json();
+      setTeamMembers(data.members || []);
+    } catch (err) {
+      setMembersError('Network error');
+      setTeamMembers([]);
+    } finally {
+      setMembersLoading(false);
     }
   };
 
@@ -381,6 +500,26 @@ const EventDetails: React.FC<EventDetailsProps> = ({ event, onBack }) => {
                 <button className="registered-btn" disabled>
                   REGISTERED
                 </button>
+                {/* Invite button if team not full */}
+                {event.min_no_member && event.max_no_member && event.min_no_member > 1 && teamMembers.length < event.max_no_member && (
+                  <button
+                    className="register-btn"
+                    style={{ marginLeft: 12 }}
+                    onClick={() => setShowInvitePopup(true)}
+                  >
+                    Send Team Invite
+                  </button>
+                )}
+                {/* Show team members button if team event */}
+                {event.min_no_member && event.min_no_member > 1 && (
+                  <button
+                    className="register-btn"
+                    style={{ marginLeft: 12 }}
+                    onClick={handleShowMembers}
+                  >
+                    Show Team Members
+                  </button>
+                )}
               </div>
             ) : (
               <div className="action-buttons">
@@ -395,6 +534,73 @@ const EventDetails: React.FC<EventDetailsProps> = ({ event, onBack }) => {
             )}
           </div>
         )}
+      {/* Invite Popup */}
+      {showInvitePopup && (
+        <div className="popup-overlay">
+          <div className="popup-content">
+            <h3>Invite Team Member</h3>
+            <input
+              type="text"
+              placeholder="Enter roll number"
+              value={inviteRollNo}
+              onChange={e => setInviteRollNo(e.target.value)}
+              style={{ marginBottom: 8 }}
+            />
+            <button onClick={handleSearchRollNo} disabled={inviteLoading || !inviteRollNo}>
+              {inviteLoading ? 'Searching...' : 'Search'}
+            </button>
+            <button onClick={() => { setShowInvitePopup(false); setInviteRollNo(''); setInviteResult(null); setInviteError(null); }} style={{ marginLeft: 8 }}>
+              Close
+            </button>
+            {inviteError && <div style={{ color: 'red', marginTop: 8 }}>{inviteError}</div>}
+            {inviteResult && inviteResult.user_id && !inviteSent && (
+              <div style={{ marginTop: 12 }}>
+                <div>Roll No: {inviteResult.rollno}</div>
+                <button onClick={() => { handleSendInvite(inviteResult.user_id); setInviteResult(null); setShowInvitePopup(false); }} style={{ marginTop: 8 }}>
+                  Send Invite
+                </button>
+              </div>
+            )}
+            {inviteSent && <div style={{ color: 'green', marginTop: 8 }}>Invite sent!</div>}
+          </div>
+        </div>
+      )}
+
+      {/* Show Members Popup */}
+      {showMembersPopup && (
+        <div className="popup-overlay">
+          <div className="popup-content">
+            <h3>Team Members</h3>
+            {membersLoading ? (
+              <div>Loading...</div>
+            ) : membersError ? (
+              <div style={{ color: 'red' }}>{membersError}</div>
+            ) : (
+              <ul>
+                {teamMembers.map((member) => (
+                  <li key={member.id} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    {member.rollno} - {member.name}
+                    {/* Remove button for all except myself */}
+                    {member.id !== teamId && (
+                      <button
+                        style={{ marginLeft: 8, color: 'red', border: '1px solid #f00', background: 'none', cursor: 'pointer' }}
+                        disabled={removingMemberId === member.id}
+                        onClick={() => {
+                          if (window.confirm(`Are you sure you want to remove ${member.name} from the team?`)) {
+                            handleRemoveMember(member.id);
+                          }
+                        }}
+                      >Remove</button>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            )}
+            <div style={{ marginTop: 8 }}>Total Members: {teamMembers.length}</div>
+            <button onClick={() => setShowMembersPopup(false)} style={{ marginTop: 12 }}>Close</button>
+          </div>
+        </div>
+      )}
       </div>
     </div>
   );
