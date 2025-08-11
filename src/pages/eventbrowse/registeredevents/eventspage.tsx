@@ -139,7 +139,6 @@ const EventsPage: React.FC = () => {
     const fetchRegisteredEvents = async () => {
       setLoading(true);
       setError(null);
-
       try {
         const response = await fetch(`${URL}/user/registeredevents`, {
           method: 'GET',
@@ -148,36 +147,49 @@ const EventsPage: React.FC = () => {
             'Content-Type': 'application/json'
           }
         });
-
         if (!response.ok) {
           throw new Error(`Error: ${response.status}`);
         }
-
         const result = await response.json();
-        console.log('Registered Events API Response:', result);
-
-        // Transform registered events data to match EventType
-        const formattedEvents = result.map((regEvent: RegisteredEvent) => ({
-          id: regEvent.event.id,
-          name: regEvent.event.name,
-          organizer: regEvent.team_name || 'Your Team',
-          date: new Date(regEvent.event.date).toLocaleDateString(),
-          about: regEvent.event.about,
-          venue: regEvent.event.venue,
-          event_type: regEvent.event.event_type,
-          event_category: regEvent.event.event_category,
-          team_id: regEvent.team_id,
-          members: regEvent.members,
-          chief_guest: regEvent.event.chief_guest,
-          min_no_member: regEvent.event.min_no_member,
-          max_no_member: regEvent.event.max_no_member,
-          status: 'registered',
-          club_name: '',  // Set default empty value
-          poster: `${URL}/event/eventposter?id=${regEvent.event.id}`
+        // For each registered event, fetch full event details and merge
+        const formattedEvents = await Promise.all(result.map(async (regEvent: RegisteredEvent) => {
+          let eventDetails: any = {};
+          try {
+            const detailsRes = await fetch(`${URL}/event/eventdetails?id=${regEvent.event.id}`, {
+              method: 'GET',
+              credentials: 'include',
+              headers: { 'Content-Type': 'application/json' }
+            });
+            if (detailsRes.ok) {
+              const detailsJson = await detailsRes.json();
+              eventDetails = detailsJson.data || {};
+              console.log('Fetched event details for', regEvent.event.id, eventDetails); // DEBUG
+            }
+          } catch (err) {
+            console.log('Error fetching event details for', regEvent.event.id, err); // DEBUG
+          }
+          const mergedEvent = {
+            id: regEvent.event.id,
+            name: regEvent.event.name,
+            organizer: regEvent.team_name || 'Your Team',
+            date: new Date(regEvent.event.date).toLocaleDateString(),
+            about: eventDetails.about || regEvent.event.about,
+            venue: eventDetails.venue || regEvent.event.venue,
+            event_type: eventDetails.event_type || regEvent.event.event_type,
+            event_category: eventDetails.event_category || regEvent.event.event_category,
+            team_id: regEvent.team_id,
+            members: regEvent.members,
+            chief_guest: eventDetails.chief_guest || regEvent.event.chief_guest,
+            min_no_member: eventDetails.min_no_member ?? regEvent.event.min_no_member,
+            max_no_member: eventDetails.max_no_member ?? regEvent.event.max_no_member,
+            status: 'registered',
+            club_name: eventDetails.club_name || '',
+            poster: `${URL}/event/eventposter?id=${regEvent.event.id}`
+          };
+          console.log('Merged event object:', mergedEvent); // DEBUG
+          return mergedEvent;
         }));
-
         setRegisteredEvents(formattedEvents);
-
         // If there's an event ID in the URL, fetch additional details for it
         if (id) {
           const eventId = Number(id);
@@ -186,13 +198,11 @@ const EventsPage: React.FC = () => {
       } catch (err) {
         console.error("Failed to fetch registered events:", err);
         setError("Failed to load registered events. Please try again later.");
-        // Fall back to mock data if API fails
         setRegisteredEvents(mockEvents);
       } finally {
         setLoading(false);
       }
     };
-
     fetchRegisteredEvents();
   }, [id]);
 
